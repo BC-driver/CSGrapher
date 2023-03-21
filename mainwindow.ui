@@ -47,6 +47,33 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
+         <widget class="QPushButton" name="cursorSetButton">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Consolas</family>
+            <pointsize>12</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>C</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="graphSetButton">
           <property name="minimumSize">
            <size>
@@ -101,7 +128,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="queueSetbutton">
+         <widget class="QPushButton" name="queueSetButton">
           <property name="minimumSize">
            <size>
             <width>40</width>
@@ -273,20 +300,32 @@ border-color: rgb(0, 0, 0);</string>
     <property name="title">
      <string>File(&amp;F)</string>
     </property>
-    <addaction name="actionOpen_Graph_O"/>
-    <addaction name="actionNew_Graph_N"/>
+    <addaction name="openGraphAction"/>
+    <addaction name="newGraphAction"/>
+    <addaction name="saveGraphAction"/>
+    <addaction name="renderImageAction"/>
    </widget>
    <addaction name="menuFile_F"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionOpen_Graph_O">
+  <action name="openGraphAction">
    <property name="text">
     <string>Open Graph(&amp;O)</string>
    </property>
   </action>
-  <action name="actionNew_Graph_N">
+  <action name="newGraphAction">
    <property name="text">
     <string>New Graph(&amp;N)</string>
+   </property>
+  </action>
+  <action name="saveGraphAction">
+   <property name="text">
+    <string>Save Graph(&amp;S)</string>
+   </property>
+  </action>
+  <action name="renderImageAction">
+   <property name="text">
+    <string>Render to Image(&amp;I)</string>
    </property>
   </action>
  </widget>

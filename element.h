@@ -1,98 +1,297 @@
+/*****************************************************************************
+* \file element.h
+* \author Zirui Xu
+* \date 2023/03/21
+* \version v0.2
+* \brief 定义了绘图的各类基本元素
+* \note Copyright (c) 2020-2030 南京理工大学
+* \remarks 整理代码格式
+******************************************************************************/
 #ifndef ELEMENT_H
 #define ELEMENT_H
 
+
 #include <QPainter>
 
+
+// Base Class for graphs
 class Element
 {
 
-protected:
-    int xPos, yPos, width;
-    QColor edgeColor, fontColor;
-    QString context;
 
 public:
-    Element();
 
-    void setPos(int x, int y){
-        xPos = x; yPos = y;
-        return;
-    }
 
-    void setEdgeClor(QColor color){
-        edgeColor = color;
-        return;
-    }
+    Element(int x, int y);
 
-    void setFontColor(QColor color){
-        fontColor = color;
-        return;
-    }
 
-    void setContext(QString s){
-        context = s;
-        return;
-    }
+    void setPos(int x, int y);
+
+
+    void setEdgeColor(QColor color);
+
+
+    void setFontColor(QColor color);
+
+
+    void setContext(QString s);
+
+
+    void setDefaultLineWidth(int width);
+
+
+    void setDefaultFontSize(int fontsize);
+
+
+    void setDefaultEdgeColor(QColor color);
+
+
+    void setDefaultFontColor(QColor color);
+
+
+    void setDefaultContext(QString s);
+
+
+    int getXPos();
+
+
+    int getYPos();
+
+
+    QColor getEdgeColor();
+
+
+    QColor getFontColor();
+
+
+    QString getContext();
+
+
+    int getDefaultLineWidth();
+
+
+    int getDefaultFontSize();
+
+
+    QColor getDefaultEdgeColor();
+
+
+    QColor getDefaultFontColor();
+
+
+    QString getDefaultContext();
+
+
+    virtual void paint(QPainter *painter) = 0;
+
+
+protected:
+
+
+    int xPos, yPos, lineWidth, fontSize;
+
+
+    QColor edgeColor, fontColor;
+
+
+    QString context;
+
+
+    static int defaultLineWidth, defaultFontSize;
+
+
+    static QColor defaultEdgeColor, defaultFontColor;
+
+
+    static QString defaultContext;
+
 
 };
 
 
-class Node : public Element{
+// Auxiliary class for Stack and Queue
+class BlockElement{
 
-private:
-    int radius;
 
 public:
-    Node(int x, int y, int r = 10, int w = 4,
-         QColor eColor = QColor(0, 0, 0), QColor fColor = QColor(0, 0, 0)){
-        xPos = x; yPos = y; radius = r; width = w;
-        edgeColor = eColor; fontColor = fColor;
-    }
 
+
+    BlockElement(QColor ec = QColor(0, 0, 0), QColor fc = QColor(0, 0, 0), QString context = "");
+
+
+    void setEdgeColor(QColor ec);
+
+
+    void setFontColor(QColor fc);
+
+
+    void setContext(QString context);
+
+
+    QColor getEdgeColor();
+
+
+    QColor getFontColor();
+
+
+    QString getcontext();
+
+
+private:
+
+
+    QString context;
+
+
+    QColor edgeColor, fontColor;
+
+
+};
+
+
+class NodeElement : public Element{
+
+
+public:
+
+
+    NodeElement(int x, int y, int r = 20);
+
+
+    int getRadius();
+
+
+    void paint(QPainter* painter);
+
+
+private:
+
+
+    int radius;
 
 };
 
 
 class StackElement : public Element{
 
-private:
-    int blockWidth, blockHeight;
 
 public:
-    StackElement()
-};
 
 
-class Stack : public Element{
+    StackElement(int x, int y, int n, QString *list, int bw = 50, int bh = 30);
+
+
+    ~StackElement();
+
+
+    void setBlockWidth(int blockWidth);
+
+
+    void setBlockHeight(int blockHeight);
+
+
+    int getBlockWidth();
+
+
+    int getBlockHeight();
+
+
+    void paint(QPainter* painter);
+
 
 private:
+
+
     int size, blockWidth, blockHeight;
-    QVector <StackElement*> blocks;
+    QVector <BlockElement*> blocks;
 
-public:
-    Stack(int x, int y, QString *list, QColor eColor = QColor(0, 0, 0),
-          QColor fColor = QColor(0, 0, 0), int bw = 20, int bh = 10){
-        xPos = x; yPos = y;
-    }
+
 };
 
 
 class QueueElement : public Element{
 
+
+public:
+
+
+    QueueElement(int x, int y, int n, QString *list, int bw = 50, int bh = 30);
+
+
+    ~QueueElement();
+
+
+    void setBlockWidth(int blockWidth);
+
+
+    void setBlockHeight(int blockHeight);
+
+
+    int getBlockWidth();
+
+
+    int getBlockHeight();
+
+
+    void paint(QPainter* painter);
+
+
 private:
+
+
+    int size, blockWidth, blockHeight;
+    QVector <BlockElement*> blocks;
+
 
 };
 
 
-class Queue : public Element{
+class ArrowElement : public Element{
+
+
+public:
+
+
+    ArrowElement(int xStartPos, int yStartPos, int xEndPos, int yEndPos);
+
+
+    void setEndPos(int x, int y);
+
+
+    void setStartPos(int x, int y);
+
+
+    int getXEndPos();
+
+
+    int getYEndPos();
+
+
+    int getXStartPos();
+
+
+    int getYStartPos();
+
+
+    void paint(QPainter* painter);
+
 
 private:
-    int size;
-    QVector <QueueElement*> blocks;
+
+
+    int xEndPos, yEndPos;
 
 
 };
 
+
+enum elementType{
+    NODE,
+    STACK,
+    QUEUE,
+    ARROW,
+    CURSOR
+};
 
 
 #endif // ELEMENT_H
