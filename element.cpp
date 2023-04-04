@@ -41,13 +41,23 @@ void Element::setContext(QString s){
 }
 
 
+void Element::setFontSize(int fonts){
+    fontSize = fonts;
+}
+
+
+void Element::setLineWidth(int linew){
+    lineWidth = linew;
+}
+
+
 void Element::setDefaultLineWidth(int width){
     defaultLineWidth = width;
 }
 
 
 void Element::setDefaultFontSize(int fontsize){
-    fontSize = fontsize;
+    defaultFontSize = fontsize;
 }
 
 
@@ -88,6 +98,16 @@ QColor Element::getFontColor(){
 
 QString Element::getContext(){
     return context;
+}
+
+
+int Element::getFontSize(){
+    return fontSize;
+}
+
+
+int Element::getLineWidth(){
+    return lineWidth;
 }
 
 
@@ -189,6 +209,11 @@ void NodeElement::paint(QPainter* painter){
 }
 
 
+bool NodeElement::hoverOn(QPoint pt){
+    return (pt.x() - xPos) * (pt.x() - xPos) + (pt.y() - yPos) * (pt.y() - yPos) < radius * radius;
+}
+
+
 // StackElement's functions
 StackElement::StackElement(int x, int y, int n, QString *list, int bw, int bh) :
     Element(x, y){
@@ -270,6 +295,13 @@ void StackElement::paint(QPainter *painter){
 }
 
 
+bool StackElement::hoverOn(QPoint pt){
+    bool inXRange = xPos - blockWidth * 0.5 <= pt.x() && pt.x() <= xPos + blockWidth * 0.5;
+    bool inYRange = yPos - blockHeight * 0.5 <= pt.y() && pt.y() <= yPos + blockHeight * (0.5 + size);
+    return inXRange && inYRange;
+}
+
+
 // QueueElement's functions
 QueueElement::QueueElement(int x, int y, int n, QString *list, int bw, int bh) :
     Element(x, y){
@@ -341,6 +373,13 @@ void QueueElement::paint(QPainter *painter){
                             this -> blockWidth, this -> blockHeight);
     }
 
+}
+
+
+bool QueueElement::hoverOn(QPoint pt){
+    bool inXRange = xPos - blockWidth * 0.25 <= pt.x() && pt.x() <= xPos + blockWidth * (0.75 + size);
+    bool inYRange = yPos - blockHeight * 0.5 <= pt.y() && pt.y() <= yPos + blockHeight * 0.5;
+    return inXRange && inYRange;
 }
 
 

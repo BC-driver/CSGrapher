@@ -12,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    connect(ui -> board, &PaintWidget::showDefaultInfoSignal, this, &MainWindow::displayDefaultInfo);
+    connect(ui -> board, &PaintWidget::showElementInfoSignal, this, &MainWindow::displayElementInfo);
     connect(ui -> renderImageAction, &QAction::triggered, this, &MainWindow::renderImageActionSlot);
 
     currentButton = ui -> cursorSetButton;
@@ -23,7 +25,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui -> queueSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
     ui -> graphSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
 
+    this -> setWindowTitle("CSGraph");
 
+    ui -> board -> setMouseTracking(true);
 
 }
 
@@ -126,4 +130,22 @@ void MainWindow::on_openGraphAction_triggered(){
         ui -> board -> initGraph();
         updateGraphDataText();
     }
+}
+
+
+void MainWindow::displayDefaultInfo(){
+    ui -> InfoTitle -> setText("默认参数:");
+    ui -> lineWidthlineEdit -> setText(QString::number(Element::getDefaultLineWidth()));
+    QColor edgecolor = Element::getDefaultEdgeColor();
+    ui -> rLineColorLineEdit -> setText(QString::number(edgecolor.red()));
+    ui -> gLineColorLineEdit -> setText(QString::number(edgecolor.green()));
+    ui -> bLineColorLineEdit -> setText(QString::number(edgecolor.blue()));
+    ui -> lineColorDisplayScreen -> setStyleSheet("background-color: rgb" + QString::number(edgecolor.red()) + ","
+                                                  + QString::number(edgecolor.green()) + ","
+                                                  + QString::number(edgecolor.blue()) + ");");
+}
+
+
+void MainWindow::displayElementInfo(Element *eptr){
+    //TODO
 }

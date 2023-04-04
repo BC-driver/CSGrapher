@@ -37,19 +37,25 @@ public:
     void setContext(QString s);
 
 
-    void setDefaultLineWidth(int width);
+    void setLineWidth(int linew);
 
 
-    void setDefaultFontSize(int fontsize);
+    void setFontSize(int fonts);
 
 
-    void setDefaultEdgeColor(QColor color);
+    static void setDefaultLineWidth(int width);
 
 
-    void setDefaultFontColor(QColor color);
+    static void setDefaultFontSize(int fontsize);
 
 
-    void setDefaultContext(QString s);
+    static void setDefaultEdgeColor(QColor color);
+
+
+    static void setDefaultFontColor(QColor color);
+
+
+    static void setDefaultContext(QString s);
 
 
     int getXPos();
@@ -67,22 +73,31 @@ public:
     QString getContext();
 
 
-    int getDefaultLineWidth();
+    int getLineWidth();
 
 
-    int getDefaultFontSize();
+    int getFontSize();
 
 
-    QColor getDefaultEdgeColor();
+    static int getDefaultLineWidth();
 
 
-    QColor getDefaultFontColor();
+    static int getDefaultFontSize();
 
 
-    QString getDefaultContext();
+    static QColor getDefaultEdgeColor();
+
+
+    static QColor getDefaultFontColor();
+
+
+    static QString getDefaultContext();
 
 
     virtual void paint(QPainter *painter) = 0;
+
+
+    virtual bool hoverOn(QPoint pt) = 0;
 
 
 protected:
@@ -164,6 +179,9 @@ public:
     void paint(QPainter* painter);
 
 
+    bool hoverOn(QPoint pt);
+
+
 private:
 
 
@@ -197,6 +215,9 @@ public:
 
 
     void paint(QPainter* painter);
+
+
+    bool hoverOn(QPoint pt);
 
 
 private:
@@ -234,6 +255,9 @@ public:
 
 
     void paint(QPainter* painter);
+
+
+    bool hoverOn(QPoint pt);
 
 
 private:

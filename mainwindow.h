@@ -87,6 +87,12 @@ private slots:
     void on_openGraphAction_triggered();
 
 
+    void displayDefaultInfo();
+
+
+    void displayElementInfo(Element* eptr);
+
+
 };
 
 

@@ -8,7 +8,8 @@
 
 PaintWidget::PaintWidget(QWidget *parent) : QWidget{parent}
 {
-    this->setAttribute(Qt::WA_StyledBackground, true);
+    this -> setAttribute(Qt::WA_StyledBackground, true);
+    currentHighlightElement = Q_NULLPTR;
 }
 
 
@@ -25,17 +26,8 @@ void PaintWidget::setFilePath(QString s){
 void PaintWidget::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     painter.setRenderHint(QPainter::HighQualityAntialiasing);
-    for(int i = 0;i < nodeList.size();i++){
-        NodeElement* currentNode = nodeList[i];
-        currentNode -> paint(&painter);
-    }
-    for(int i = 0;i < stackList.size();i++){
-        StackElement* currentStack = stackList[i];
-        currentStack -> paint(&painter);
-    }
-    for(int i = 0;i < queueList.size();i++){
-        QueueElement* currentQueue = queueList[i];
-        currentQueue -> paint(&painter);
+    for(auto p : elementList){
+        p -> paint(&painter);
     }
 }
 
@@ -43,30 +35,54 @@ void PaintWidget::paintEvent(QPaintEvent *event){
 void PaintWidget::mousePressEvent(QMouseEvent *event){
     if(event -> button() == Qt::LeftButton){
         QPoint mousePos = event -> pos();
-        int index = nodeList.size() + 1;
         QString temp[1] = {"1"};
+        bool noCollide = findHoverOn(mousePos) == Q_NULLPTR;
         switch(currentDrawingElement){
             case NODE:
-            initNode(mousePos);
+            if(noCollide) initNode(mousePos);
             break;
 
             case STACK:
-            stackList.push_back(new StackElement(mousePos.x(), mousePos.y(), 1, temp));
+            if(noCollide) initStack(mousePos, 1, temp);
             break;
 
             case QUEUE:
-            queueList.push_back(new QueueElement(mousePos.x(), mousePos.y(), 1, temp));
+            if(noCollide) initQueue(mousePos, 1, temp);
             break;
 
             case ARROW:
+            showInfo(mousePos);
             break;
 
             case CURSOR:
             break;
         }
         update();
-        updateGraphFile();
+        //updateGraphFile();
     }
+}
+
+
+void PaintWidget::mouseMoveEvent(QMouseEvent *event){
+    QPoint pt = event -> pos();
+    if(currentHighlightElement != Q_NULLPTR){
+        currentHighlightElement -> setLineWidth(currentHighlightElement -> getLineWidth() - 3);
+        currentHighlightElement -> setFontSize(currentHighlightElement -> getFontSize() - 3);
+    }
+    currentHighlightElement = findHoverOn(pt);
+    if(currentHighlightElement != Q_NULLPTR){
+        currentHighlightElement -> setLineWidth(currentHighlightElement -> getLineWidth() + 3);
+        currentHighlightElement -> setFontSize(currentHighlightElement -> getFontSize() + 3);
+    }
+    update();
+}
+
+
+Element* PaintWidget::findHoverOn(QPoint pt){
+    for(auto eptr : elementList){
+        if(eptr -> hoverOn(pt)) return eptr;
+    }
+    return Q_NULLPTR;
 }
 
 
@@ -76,14 +92,23 @@ void PaintWidget::updateGraphFile(){
 
 
 void PaintWidget::initNode(QPoint pt){
-    // todo;
+    elementList.push_back(new NodeElement(pt.x(), pt.y()));
+    elementList.last()->setContext(QString::number(elementList.length()));
+}
+
+
+void PaintWidget::initQueue(QPoint pt, int size, QString *list){
+    elementList.push_back(new QueueElement(pt.x(), pt.y(), size, list));
+}
+
+
+void PaintWidget::initStack(QPoint pt, int size, QString *list){
+    elementList.push_back(new StackElement(pt.x(), pt.y(), size, list));
 }
 
 
 void PaintWidget::initGraph(){
-    nodeList.clear();
-    stackList.clear();
-    queueList.clear();
+    elementList.clear();
     QFile file(filePath);
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream in(&file);
@@ -100,4 +125,22 @@ void PaintWidget::initGraph(){
             //todo;
         }
     }
+}
+
+
+void PaintWidget::showInfo(QPoint pt){
+    Element *eptr = findHoverOn(pt);
+    if(eptr == Q_NULLPTR) showDefaultInfo();
+
+    else showElementInfo(eptr);
+}
+
+
+void PaintWidget::showDefaultInfo(){
+    emit showDefaultInfoSignal();
+}
+
+
+void PaintWidget::showElementInfo(Element *eptr){
+    emit showElementInfoSignal(eptr);
 }

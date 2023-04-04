@@ -25,6 +25,12 @@ signals:
     void fileUpdated();
 
 
+    void showDefaultInfoSignal();
+
+
+    void showElementInfoSignal(Element *eptr);
+
+
 public:
 
 
@@ -46,16 +52,28 @@ public:
     void initNode(QPoint pt);
 
 
-    void initStack(QPoint pt);
+    void initStack(QPoint pt, int size, QString *list);
 
 
-    void initQueue(QPoint pt);
+    void initQueue(QPoint pt, int size, QString *list);
 
 
     void initArrow(QPoint pt);
 
 
     void updateGraphFile();
+
+
+    Element* findHoverOn(QPoint pt);
+
+
+    void showInfo(QPoint pt);
+
+
+    void showDefaultInfo();
+
+
+    void showElementInfo(Element *eptr);
 
 
 protected:
@@ -67,22 +85,22 @@ protected:
     void mousePressEvent(QMouseEvent *event);
 
 
+    void mouseMoveEvent(QMouseEvent *event);
+
+
 private:
 
 
     elementType currentDrawingElement;
 
 
-    QList <NodeElement*> nodeList;
-
-
-    QList <StackElement*> stackList;
-
-
-    QList <QueueElement*> queueList;
+    QList <Element*> elementList;
 
 
     QString filePath;
+
+
+    Element* currentHighlightElement;
 
 
 };
