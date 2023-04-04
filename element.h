@@ -14,6 +14,15 @@
 #include <QPainter>
 
 
+enum elementType{
+    NODE,
+    STACK,
+    QUEUE,
+    ARROW,
+    CURSOR
+};
+
+
 // Base Class for graphs
 class Element
 {
@@ -22,7 +31,7 @@ class Element
 public:
 
 
-    Element(int x, int y);
+    Element(int x, int y, elementType tp);
 
 
     void setPos(int x, int y);
@@ -62,6 +71,9 @@ public:
 
 
     int getYPos();
+
+
+    elementType getType();
 
 
     QColor getEdgeColor();
@@ -110,6 +122,9 @@ protected:
 
 
     QString context;
+
+
+    elementType type;
 
 
     static int defaultLineWidth, defaultFontSize;
@@ -309,13 +324,7 @@ private:
 };
 
 
-enum elementType{
-    NODE,
-    STACK,
-    QUEUE,
-    ARROW,
-    CURSOR
-};
+
 
 
 #endif // ELEMENT_H

@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTextStream>
+#include <QDebug>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -28,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent)
     this -> setWindowTitle("CSGraph");
 
     ui -> board -> setMouseTracking(true);
+
+    currentFocusElement = Q_NULLPTR;
 
 }
 
@@ -134,18 +137,141 @@ void MainWindow::on_openGraphAction_triggered(){
 
 
 void MainWindow::displayDefaultInfo(){
+    currentFocusElement = Q_NULLPTR;
     ui -> InfoTitle -> setText("默认参数:");
     ui -> lineWidthlineEdit -> setText(QString::number(Element::getDefaultLineWidth()));
     QColor edgecolor = Element::getDefaultEdgeColor();
     ui -> rLineColorLineEdit -> setText(QString::number(edgecolor.red()));
     ui -> gLineColorLineEdit -> setText(QString::number(edgecolor.green()));
     ui -> bLineColorLineEdit -> setText(QString::number(edgecolor.blue()));
-    ui -> lineColorDisplayScreen -> setStyleSheet("background-color: rgb" + QString::number(edgecolor.red()) + ","
+    ui -> lineColorDisplayScreen -> setStyleSheet("background-color: rgb(" + QString::number(edgecolor.red()) + ","
                                                   + QString::number(edgecolor.green()) + ","
                                                   + QString::number(edgecolor.blue()) + ");");
+    ui -> fontSizelineEdit -> setText(QString::number(Element::getDefaultFontSize()));
+    QColor fontcolor = Element::getDefaultFontColor();
+    ui -> rFontColorLineEdit -> setText(QString::number(fontcolor.red()));
+    ui -> gFontColorLineEdit -> setText(QString::number(fontcolor.green()));
+    ui -> bFontColorLineEdit -> setText(QString::number(fontcolor.blue()));
+    ui -> fontColorDisplayScreen -> setStyleSheet("background-color: rgb(" + QString::number(fontcolor.red()) + ","
+                                                  + QString::number(fontcolor.green()) + ","
+                                                  + QString::number(fontcolor.blue()) + ");");
+
 }
 
 
 void MainWindow::displayElementInfo(Element *eptr){
-    //TODO
+    currentFocusElement = eptr;
+    QString typeStr = "";
+    switch (eptr -> getType()) {
+        case NODE:
+        typeStr = "Node";
+        break;
+
+        case STACK:
+        typeStr = "Stack";
+        break;
+
+        case QUEUE:
+        typeStr = "Queue";
+        break;
+    }
+    ui -> InfoTitle -> setText(typeStr + eptr -> getContext() + "参数:");
+    ui -> lineWidthlineEdit -> setText(QString::number(eptr -> getLineWidth()));
+    QColor edgecolor = eptr -> getEdgeColor();
+    ui -> rLineColorLineEdit -> setText(QString::number(edgecolor.red()));
+    ui -> gLineColorLineEdit -> setText(QString::number(edgecolor.green()));
+    ui -> bLineColorLineEdit -> setText(QString::number(edgecolor.blue()));
+    ui -> lineColorDisplayScreen -> setStyleSheet("background-color: rgb(" + QString::number(edgecolor.red()) + ","
+                                                  + QString::number(edgecolor.green()) + ","
+                                                  + QString::number(edgecolor.blue()) + ");");
+    ui -> fontSizelineEdit -> setText(QString::number(eptr -> getFontSize()));
+    QColor fontcolor = eptr -> getFontColor();
+    ui -> rFontColorLineEdit -> setText(QString::number(fontcolor.red()));
+    ui -> gFontColorLineEdit -> setText(QString::number(fontcolor.green()));
+    ui -> bFontColorLineEdit -> setText(QString::number(fontcolor.blue()));
+    ui -> fontColorDisplayScreen -> setStyleSheet("background-color: rgb(" + QString::number(fontcolor.red()) + ","
+                                                  + QString::number(fontcolor.green()) + ","
+                                                  + QString::number(fontcolor.blue()) + ");");
+}
+
+
+void MainWindow::on_lineWidthlineEdit_returnPressed(){
+    int changeValue = ui -> lineWidthlineEdit -> text().toInt();
+    if(currentFocusElement == Q_NULLPTR){
+        Element::setDefaultLineWidth(changeValue);
+    }
+
+    else{
+        if(currentFocusElement == ui -> board -> getCurrentHighlightElement()){
+            currentFocusElement -> setLineWidth(changeValue + 3);
+        }
+
+        else{
+            currentFocusElement -> setLineWidth(changeValue);
+        }
+    }
+    update();
+}
+
+
+void MainWindow::on_rLineColorLineEdit_returnPressed()
+{
+    int changeValue = ui -> rLineColorLineEdit -> text().toInt();
+
+    QColor changeColor;
+    if(currentFocusElement == Q_NULLPTR){
+        changeColor = Element::getDefaultEdgeColor();
+        changeColor.setRed(changeValue);
+        Element::setDefaultEdgeColor(changeColor);
+    }
+
+    else{
+        changeColor = currentFocusElement -> getEdgeColor();
+        changeColor.setRed(changeValue);
+        currentFocusElement -> setEdgeColor(changeColor);
+    }
+    ui -> lineColorDisplayScreen -> setStyleSheet("background-color: rgb(" + QString::number(changeColor.red()) + ","
+                                                  + QString::number(changeColor.green()) + ","
+                                                  + QString::number(changeColor.blue()) + ");");
+    update();
+}
+
+void MainWindow::on_gLineColorLineEdit_returnPressed(){
+    int changeValue = ui -> gLineColorLineEdit -> text().toInt();
+    QColor changeColor;
+    if(currentFocusElement == Q_NULLPTR){
+        changeColor = Element::getDefaultEdgeColor();
+        changeColor.setGreen(changeValue);
+        Element::setDefaultEdgeColor(changeColor);
+    }
+
+    else{
+        changeColor = currentFocusElement -> getEdgeColor();
+        changeColor.setGreen(changeValue);
+        currentFocusElement -> setEdgeColor(changeColor);
+    }
+    ui -> lineColorDisplayScreen -> setStyleSheet("background-color: rgb(" + QString::number(changeColor .red()) + ","
+                                                  + QString::number(changeColor.green()) + ","
+                                                  + QString::number(changeColor.blue()) + ");");
+    update();
+}
+
+void MainWindow::on_bLineColorLineEdit_returnPressed(){
+    int changeValue = ui -> bLineColorLineEdit -> text().toInt();
+    QColor changeColor;
+    if(currentFocusElement == Q_NULLPTR){
+        changeColor = Element::getDefaultEdgeColor();
+        changeColor.setBlue(changeValue);
+        Element::setDefaultEdgeColor(changeColor);
+    }
+
+    else{
+        changeColor = currentFocusElement -> getEdgeColor();
+        changeColor.setBlue(changeValue);
+        currentFocusElement -> setEdgeColor(changeColor);
+    }
+    ui -> lineColorDisplayScreen -> setStyleSheet("background-color: rgb(" + QString::number(changeColor .red()) + ","
+                                                  + QString::number(changeColor.green()) + ","
+                                                  + QString::number(changeColor.blue()) + ");");
+    update();
 }

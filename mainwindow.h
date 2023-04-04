@@ -63,6 +63,9 @@ private:
     QString idelColor, activeColor;
 
 
+    Element* currentFocusElement;
+
+
 private slots:
 
 
@@ -93,6 +96,10 @@ private slots:
     void displayElementInfo(Element* eptr);
 
 
+    void on_lineWidthlineEdit_returnPressed();
+    void on_rLineColorLineEdit_returnPressed();
+    void on_gLineColorLineEdit_returnPressed();
+    void on_bLineColorLineEdit_returnPressed();
 };
 
 

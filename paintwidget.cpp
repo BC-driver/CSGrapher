@@ -51,10 +51,10 @@ void PaintWidget::mousePressEvent(QMouseEvent *event){
             break;
 
             case ARROW:
-            showInfo(mousePos);
             break;
 
             case CURSOR:
+            showInfo(mousePos);
             break;
         }
         update();
@@ -143,4 +143,9 @@ void PaintWidget::showDefaultInfo(){
 
 void PaintWidget::showElementInfo(Element *eptr){
     emit showElementInfoSignal(eptr);
+}
+
+
+Element* PaintWidget::getCurrentHighlightElement(){
+    return currentHighlightElement;
 }

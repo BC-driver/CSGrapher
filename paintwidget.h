@@ -76,6 +76,9 @@ public:
     void showElementInfo(Element *eptr);
 
 
+    Element* getCurrentHighlightElement();
+
+
 protected:
 
 

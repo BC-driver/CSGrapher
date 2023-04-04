@@ -10,9 +10,10 @@ QString Element::defaultContext = "";
 
 
 // Element's functions
-Element::Element(int x, int y){
+Element::Element(int x, int y, elementType tp){
     this -> xPos = x;
     this -> yPos = y;
+    this -> type = tp;
     this -> lineWidth = defaultLineWidth;
     this -> fontSize  = defaultFontSize;
     this -> fontColor = defaultFontColor;
@@ -83,6 +84,11 @@ int Element::getXPos(){
 
 int Element::getYPos(){
     return yPos;
+}
+
+
+elementType Element::getType(){
+    return type;
 }
 
 
@@ -178,7 +184,7 @@ QString BlockElement::getcontext(){
 
 // NodeElement's functions
 NodeElement::NodeElement(int x, int y, int r) :
-    Element(x, y){
+    Element(x, y, NODE){
     this -> radius = r;
 }
 
@@ -216,7 +222,7 @@ bool NodeElement::hoverOn(QPoint pt){
 
 // StackElement's functions
 StackElement::StackElement(int x, int y, int n, QString *list, int bw, int bh) :
-    Element(x, y){
+    Element(x, y, STACK){
     this -> size = n;
     this -> blockWidth = bw;
     this -> blockHeight = bh;
@@ -304,7 +310,7 @@ bool StackElement::hoverOn(QPoint pt){
 
 // QueueElement's functions
 QueueElement::QueueElement(int x, int y, int n, QString *list, int bw, int bh) :
-    Element(x, y){
+    Element(x, y, QUEUE){
     this -> size = n;
     this -> blockWidth = bw;
     this -> blockHeight = bh;
@@ -385,7 +391,7 @@ bool QueueElement::hoverOn(QPoint pt){
 
 // ArrowElement's functions
 ArrowElement::ArrowElement(int xStartPos, int yStartPos, int xEndPos, int yEndPos) :
-    Element(xStartPos, yStartPos){
+    Element(xStartPos, yStartPos, ARROW){
     this -> xEndPos = xEndPos;
     this -> yEndPos = yEndPos;
 }
