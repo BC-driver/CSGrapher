@@ -1,11 +1,12 @@
 /*****************************************************************************
 * \file element.h
 * \author Zirui Xu
-* \date 2023/03/21
-* \version v0.2
+* \date 2023/04/04
+* \version v0.4
 * \brief 定义了绘图的各类基本元素
 * \note Copyright (c) 2020-2030 南京理工大学
-* \remarks 整理代码格式
+* \remarks 添加调色功能, 鼠标悬浮动态显示, 参数调整功能.
+*          重构BlockElement使得其继承Element基类,程序结构更简明
 ******************************************************************************/
 #ifndef ELEMENT_H
 #define ELEMENT_H
@@ -19,6 +20,7 @@ enum elementType{
     STACK,
     QUEUE,
     ARROW,
+    BLOCK,
     CURSOR
 };
 
@@ -32,6 +34,9 @@ public:
 
 
     Element(int x, int y, elementType tp);
+
+
+    virtual ~Element();
 
 
     void setPos(int x, int y);
@@ -109,7 +114,7 @@ public:
     virtual void paint(QPainter *painter) = 0;
 
 
-    virtual bool hoverOn(QPoint pt) = 0;
+    virtual Element* hoverOn(QPoint pt) = 0;
 
 
 protected:
@@ -140,40 +145,28 @@ protected:
 
 
 // Auxiliary class for Stack and Queue
-class BlockElement{
+class BlockElement : public Element{
 
 
 public:
 
 
-    BlockElement(QColor ec = QColor(0, 0, 0), QColor fc = QColor(0, 0, 0), QString context = "");
+    BlockElement(int x, int y, int bw = 50, int bh = 30);
 
 
-    void setEdgeColor(QColor ec);
+    ~BlockElement();
 
 
-    void setFontColor(QColor fc);
+    void paint(QPainter *painter);
 
 
-    void setContext(QString context);
-
-
-    QColor getEdgeColor();
-
-
-    QColor getFontColor();
-
-
-    QString getcontext();
+    Element* hoverOn(QPoint pt);
 
 
 private:
 
 
-    QString context;
-
-
-    QColor edgeColor, fontColor;
+    int blockWidth, blockHeight;
 
 
 };
@@ -188,13 +181,16 @@ public:
     NodeElement(int x, int y, int r = 20);
 
 
+    ~NodeElement();
+
+
     int getRadius();
 
 
     void paint(QPainter* painter);
 
 
-    bool hoverOn(QPoint pt);
+    Element* hoverOn(QPoint pt);
 
 
 private:
@@ -232,7 +228,7 @@ public:
     void paint(QPainter* painter);
 
 
-    bool hoverOn(QPoint pt);
+    Element* hoverOn(QPoint pt);
 
 
 private:
@@ -272,7 +268,7 @@ public:
     void paint(QPainter* painter);
 
 
-    bool hoverOn(QPoint pt);
+    Element* hoverOn(QPoint pt);
 
 
 private:
@@ -292,6 +288,9 @@ public:
 
 
     ArrowElement(int xStartPos, int yStartPos, int xEndPos, int yEndPos);
+
+
+    ~ArrowElement();
 
 
     void setEndPos(int x, int y);

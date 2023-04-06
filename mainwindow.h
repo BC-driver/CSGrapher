@@ -1,11 +1,11 @@
 /*****************************************************************************
 * \file mainwindow.h
 * \author Zirui Xu
-* \date 2023/03/21
-* \version v0.2
+* \date 2023/04/04
+* \version v0.4
 * \brief 定义了整个窗体上的各类控件
 * \note Copyright (c) 2020-2030 南京理工大学
-* \remarks 整理代码格式
+* \remarks 添加调色功能, 鼠标悬浮动态显示, 参数调整功能.
 ******************************************************************************/
 
 #ifndef MAINWINDOW_H
@@ -97,9 +97,32 @@ private slots:
 
 
     void on_lineWidthlineEdit_returnPressed();
+
+
     void on_rLineColorLineEdit_returnPressed();
+
+
     void on_gLineColorLineEdit_returnPressed();
+
+
     void on_bLineColorLineEdit_returnPressed();
+
+
+    void on_fontSizelineEdit_returnPressed();
+
+
+    void on_rFontColorLineEdit_returnPressed();
+
+
+    void on_gFontColorLineEdit_returnPressed();
+
+
+    void on_bFontColorLineEdit_returnPressed();
+
+
+    void on_elementContextLineEdit_returnPressed();
+
+
 };
 
 

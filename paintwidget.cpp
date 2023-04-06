@@ -60,6 +60,21 @@ void PaintWidget::mousePressEvent(QMouseEvent *event){
         update();
         //updateGraphFile();
     }
+
+    else if(event -> button() == Qt::RightButton){
+        QPoint mousePos = event -> pos();
+        Element *eptr = findHoverOn(mousePos);
+        if(eptr != Q_NULLPTR && eptr -> getType() != BLOCK){
+            for(auto &ptr : elementList){
+                if(ptr == eptr){
+                    ptr = elementList[elementList.size() - 1];
+                    elementList.pop_back();
+                    break;
+                }
+            }
+            delete eptr;
+        }
+    }
 }
 
 
@@ -80,7 +95,7 @@ void PaintWidget::mouseMoveEvent(QMouseEvent *event){
 
 Element* PaintWidget::findHoverOn(QPoint pt){
     for(auto eptr : elementList){
-        if(eptr -> hoverOn(pt)) return eptr;
+        if(eptr -> hoverOn(pt) != Q_NULLPTR) return eptr -> hoverOn(pt);
     }
     return Q_NULLPTR;
 }
@@ -99,11 +114,13 @@ void PaintWidget::initNode(QPoint pt){
 
 void PaintWidget::initQueue(QPoint pt, int size, QString *list){
     elementList.push_back(new QueueElement(pt.x(), pt.y(), size, list));
+    elementList.last()->setContext(QString::number(elementList.length()));
 }
 
 
 void PaintWidget::initStack(QPoint pt, int size, QString *list){
     elementList.push_back(new StackElement(pt.x(), pt.y(), size, list));
+    elementList.last()->setContext(QString::number(elementList.length()));
 }
 
 

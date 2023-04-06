@@ -22,6 +22,9 @@ Element::Element(int x, int y, elementType tp){
 }
 
 
+Element::~Element(){}
+
+
 void Element::setPos(int x, int y){
     xPos = x; yPos = y;
 }
@@ -143,42 +146,44 @@ QString Element::getDefaultContext(){
 
 
 // BlockElement's functions
-BlockElement::BlockElement(QColor ec, QColor fc, QString context){
-    this -> edgeColor = ec;
-    this -> fontColor = fc;
-    this -> context = context;
+BlockElement::BlockElement(int x, int y, int bw, int bh):
+    Element(x, y, BLOCK){
+    this -> blockWidth = bw;
+    this -> blockHeight = bh;
 }
 
 
-void BlockElement::setEdgeColor(QColor ec){
-    this -> edgeColor = ec;
-    return;
+BlockElement::~BlockElement(){}
+
+
+void BlockElement::paint(QPainter *painter){
+
+    // init the pen
+    QPen pen;
+    pen.setColor(getEdgeColor());
+    pen.setWidth(getLineWidth());
+    painter->setPen(pen);
+
+    // draw the block
+    painter -> drawRect(xPos + blockWidth * (-0.5), yPos + blockHeight * (-0.5),
+                        blockWidth, blockHeight);
+
+    // draw the descrption
+    painter -> setPen(getFontColor());
+    QFont font("Consolas", getFontSize(), QFont::Bold, false);
+    painter -> setFont(font);
+    painter -> drawText(this -> xPos + this -> blockWidth * (-0.5), this -> yPos + this -> blockHeight * (-0.5),
+                        this -> blockWidth, this -> blockHeight,
+                        Qt::AlignHCenter | Qt::AlignVCenter, getContext());
 }
 
 
-void BlockElement::setFontColor(QColor fc){
-    this -> fontColor = fc;
-    return;
-}
+Element* BlockElement::hoverOn(QPoint pt){
+    bool inXRange = xPos - blockWidth * 0.5 <= pt.x() && pt.x() <= xPos + blockWidth * 0.5;
+    bool inYRange = yPos - blockHeight * 0.5 <= pt.y() && pt.y() <= yPos + blockHeight * 0.5;
+    if(inXRange && inYRange) return this;
 
-
-void BlockElement::setContext(QString context){
-    this -> context = context;
-}
-
-
-QColor BlockElement::getEdgeColor(){
-    return this -> edgeColor;
-}
-
-
-QColor BlockElement::getFontColor(){
-    return this -> fontColor;
-}
-
-
-QString BlockElement::getcontext(){
-    return this -> context;
+    else return Q_NULLPTR;
 }
 
 
@@ -187,6 +192,9 @@ NodeElement::NodeElement(int x, int y, int r) :
     Element(x, y, NODE){
     this -> radius = r;
 }
+
+
+NodeElement::~NodeElement(){}
 
 
 int NodeElement::getRadius(){
@@ -215,8 +223,8 @@ void NodeElement::paint(QPainter* painter){
 }
 
 
-bool NodeElement::hoverOn(QPoint pt){
-    return (pt.x() - xPos) * (pt.x() - xPos) + (pt.y() - yPos) * (pt.y() - yPos) < radius * radius;
+Element* NodeElement::hoverOn(QPoint pt){
+    return (pt.x() - xPos) * (pt.x() - xPos) + (pt.y() - yPos) * (pt.y() - yPos) < radius * radius ? this : Q_NULLPTR;
 }
 
 
@@ -226,8 +234,10 @@ StackElement::StackElement(int x, int y, int n, QString *list, int bw, int bh) :
     this -> size = n;
     this -> blockWidth = bw;
     this -> blockHeight = bh;
-    for(int i = 0;i < this -> size;i++){
-        blocks.push_back(new BlockElement(this -> edgeColor, this -> fontColor, *(list + i)));
+    for(int i = 1;i <= this -> size;i++){
+        BlockElement* bptr = new BlockElement(x, y + blockHeight * i);
+        blocks.push_back(bptr);
+        bptr -> setContext(list[i - 1]);
     }
 }
 
@@ -282,29 +292,31 @@ void StackElement::paint(QPainter *painter){
 
     // draw the blocks
     for(int i = 0;i < this -> size;i++){
-        BlockElement &cur = *(this -> blocks[i]);
-        pen.setColor(cur.getEdgeColor());
-        painter -> setPen(pen);
-        painter -> drawRect(this -> xPos + this -> blockWidth * (-0.5), this -> yPos + this -> blockHeight * (i + 0.5),
-                            this -> blockWidth, this ->blockHeight);
-        pen.setColor(this -> fontColor);
-        painter -> setPen(pen);
-        font.setWeight(this -> fontSize);
-        painter -> setFont(font);
-        painter -> drawText(this -> xPos + this -> blockWidth * (-0.5), this -> yPos + this -> blockHeight * (i + 0.5),
-                            this -> blockWidth, this -> blockHeight,
-                            Qt::AlignHCenter | Qt::AlignVCenter, cur.getcontext());
+        blocks[i]->paint(painter);
     }
 
     // draw the description
+    painter -> setPen(getFontColor());
+    painter -> setFont(font);
+    painter -> drawText(this -> xPos + this -> blockWidth * (-0.5), this -> yPos + this -> blockHeight * (0.5 + size),
+                        this -> blockWidth, this -> blockHeight,
+                        Qt::AlignHCenter | Qt::AlignVCenter, getContext());
 
 }
 
 
-bool StackElement::hoverOn(QPoint pt){
+Element* StackElement::hoverOn(QPoint pt){
     bool inXRange = xPos - blockWidth * 0.5 <= pt.x() && pt.x() <= xPos + blockWidth * 0.5;
     bool inYRange = yPos - blockHeight * 0.5 <= pt.y() && pt.y() <= yPos + blockHeight * (0.5 + size);
-    return inXRange && inYRange;
+    if(inXRange && inYRange){
+        if (pt.y() <= yPos + blockHeight * 0.5) return this;
+        for(auto b : blocks){
+            if(b -> hoverOn(pt) != Q_NULLPTR)
+                return b;
+        }
+    }
+
+    else return Q_NULLPTR;
 }
 
 
@@ -314,8 +326,10 @@ QueueElement::QueueElement(int x, int y, int n, QString *list, int bw, int bh) :
     this -> size = n;
     this -> blockWidth = bw;
     this -> blockHeight = bh;
-    for(int i = 0;i < n;i++){
-        blocks.push_back(new BlockElement(this -> edgeColor, this -> fontColor, *(list + i)));
+    for(int i = 1;i <= this -> size;i++){
+        BlockElement* bptr = new BlockElement(x + blockWidth * (i - 0.25), y);
+        blocks.push_back(bptr);
+        bptr -> setContext(list[i - 1]);
     }
 }
 
@@ -353,6 +367,7 @@ void QueueElement::paint(QPainter *painter){
     QPen pen;
     pen.setColor(this -> edgeColor);
     pen.setWidth(this -> lineWidth);
+    QFont font("Consolas", this -> fontSize, QFont::Bold, false);
     painter -> setPen(pen);
 
     // draw the frame
@@ -370,22 +385,33 @@ void QueueElement::paint(QPainter *painter){
                         this -> xPos + this -> blockWidth * (this -> size + 0.75), this -> yPos + this -> blockHeight * 0.5);
 
     // draw the blocks
-    for(int i = 0;i < this -> size;i++){
-        BlockElement &cur = *(this -> blocks[i]);
-        pen.setColor(cur.getEdgeColor());
-        painter -> setPen(pen);
-        painter -> drawRect(this -> xPos + this -> blockWidth * (i + 0.25),
-                            this -> yPos - this -> blockHeight * 0.5,
-                            this -> blockWidth, this -> blockHeight);
+    for(auto b : blocks){
+        b -> paint(painter);
     }
+
+    // draw the description
+    painter -> setPen(getFontColor());
+    painter -> setFont(font);
+    painter -> drawText(this -> xPos + this -> blockWidth * (-0.5), this -> yPos + this -> blockHeight * 0.5,
+                        this -> blockWidth, this -> blockHeight,
+                        Qt::AlignHCenter | Qt::AlignVCenter, getContext());
+
 
 }
 
 
-bool QueueElement::hoverOn(QPoint pt){
+Element* QueueElement::hoverOn(QPoint pt){
     bool inXRange = xPos - blockWidth * 0.25 <= pt.x() && pt.x() <= xPos + blockWidth * (0.75 + size);
     bool inYRange = yPos - blockHeight * 0.5 <= pt.y() && pt.y() <= yPos + blockHeight * 0.5;
-    return inXRange && inYRange;
+    if(inXRange && inYRange){
+        if (pt.x() <= xPos + blockWidth * 0.25 || pt.x() >= xPos + blockWidth * (0.25 + size)) return this;
+        for(auto b : blocks){
+            if(b -> hoverOn(pt) != Q_NULLPTR)
+                return b;
+        }
+    }
+
+    else return Q_NULLPTR;
 }
 
 
@@ -396,6 +422,8 @@ ArrowElement::ArrowElement(int xStartPos, int yStartPos, int xEndPos, int yEndPo
     this -> yEndPos = yEndPos;
 }
 
+
+ArrowElement::~ArrowElement(){}
 
 void ArrowElement::setEndPos(int x, int y){
     this -> xEndPos = x;

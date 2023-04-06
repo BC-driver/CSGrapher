@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui -> graphSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
 
     this -> setWindowTitle("CSGraph");
+    this -> displayDefaultInfo();
 
     ui -> board -> setMouseTracking(true);
 
@@ -139,6 +140,7 @@ void MainWindow::on_openGraphAction_triggered(){
 void MainWindow::displayDefaultInfo(){
     currentFocusElement = Q_NULLPTR;
     ui -> InfoTitle -> setText("默认参数:");
+    ui -> elementContextLineEdit -> setText(Element::getDefaultContext());
     ui -> lineWidthlineEdit -> setText(QString::number(Element::getDefaultLineWidth()));
     QColor edgecolor = Element::getDefaultEdgeColor();
     ui -> rLineColorLineEdit -> setText(QString::number(edgecolor.red()));
@@ -164,18 +166,23 @@ void MainWindow::displayElementInfo(Element *eptr){
     QString typeStr = "";
     switch (eptr -> getType()) {
         case NODE:
-        typeStr = "Node";
+        typeStr = "节点";
         break;
 
         case STACK:
-        typeStr = "Stack";
+        typeStr = "栈";
         break;
 
         case QUEUE:
-        typeStr = "Queue";
+        typeStr = "队列";
+        break;
+
+        case BLOCK:
+        typeStr = "块";
         break;
     }
     ui -> InfoTitle -> setText(typeStr + eptr -> getContext() + "参数:");
+    ui -> elementContextLineEdit -> setText(eptr -> getContext());
     ui -> lineWidthlineEdit -> setText(QString::number(eptr -> getLineWidth()));
     QColor edgecolor = eptr -> getEdgeColor();
     ui -> rLineColorLineEdit -> setText(QString::number(edgecolor.red()));
@@ -214,10 +221,29 @@ void MainWindow::on_lineWidthlineEdit_returnPressed(){
 }
 
 
+void MainWindow::on_fontSizelineEdit_returnPressed()
+{
+    int changeValue = ui -> fontSizelineEdit -> text().toInt();
+    if(currentFocusElement == Q_NULLPTR){
+        Element::setDefaultFontSize(changeValue);
+    }
+
+    else{
+        if(currentFocusElement == ui -> board -> getCurrentHighlightElement()){
+            currentFocusElement -> setFontSize(changeValue + 3);
+        }
+
+        else{
+            currentFocusElement -> setFontSize(changeValue);
+        }
+    }
+    update();
+}
+
+
 void MainWindow::on_rLineColorLineEdit_returnPressed()
 {
     int changeValue = ui -> rLineColorLineEdit -> text().toInt();
-
     QColor changeColor;
     if(currentFocusElement == Q_NULLPTR){
         changeColor = Element::getDefaultEdgeColor();
@@ -273,5 +299,81 @@ void MainWindow::on_bLineColorLineEdit_returnPressed(){
     ui -> lineColorDisplayScreen -> setStyleSheet("background-color: rgb(" + QString::number(changeColor .red()) + ","
                                                   + QString::number(changeColor.green()) + ","
                                                   + QString::number(changeColor.blue()) + ");");
+    update();
+}
+
+
+
+void MainWindow::on_rFontColorLineEdit_returnPressed()
+{
+    int changeValue = ui -> rFontColorLineEdit -> text().toInt();
+    QColor changeColor;
+    if(currentFocusElement == Q_NULLPTR){
+        changeColor = Element::getDefaultFontColor();
+        changeColor.setRed(changeValue);
+        Element::setDefaultFontColor(changeColor);
+    }
+
+    else{
+        changeColor = currentFocusElement -> getFontColor();
+        changeColor.setRed(changeValue);
+        currentFocusElement -> setFontColor(changeColor);
+    }
+    ui -> fontColorDisplayScreen -> setStyleSheet("background-color: rgb(" + QString::number(changeColor.red()) + ","
+                                                  + QString::number(changeColor.green()) + ","
+                                                  + QString::number(changeColor.blue()) + ");");
+    update();
+}
+
+
+void MainWindow::on_gFontColorLineEdit_returnPressed()
+{
+    int changeValue = ui -> gFontColorLineEdit -> text().toInt();
+    QColor changeColor;
+    if(currentFocusElement == Q_NULLPTR){
+        changeColor = Element::getDefaultFontColor();
+        changeColor.setGreen(changeValue);
+        Element::setDefaultFontColor(changeColor);
+    }
+
+    else{
+        changeColor = currentFocusElement -> getFontColor();
+        changeColor.setGreen(changeValue);
+        currentFocusElement -> setFontColor(changeColor);
+    }
+    ui -> fontColorDisplayScreen -> setStyleSheet("background-color: rgb(" + QString::number(changeColor.red()) + ","
+                                                  + QString::number(changeColor.green()) + ","
+                                                  + QString::number(changeColor.blue()) + ");");
+    update();
+}
+
+void MainWindow::on_bFontColorLineEdit_returnPressed()
+{
+    int changeValue = ui -> bFontColorLineEdit -> text().toInt();
+    QColor changeColor;
+    if(currentFocusElement == Q_NULLPTR){
+        changeColor = Element::getDefaultFontColor();
+        changeColor.setBlue(changeValue);
+        Element::setDefaultFontColor(changeColor);
+    }
+
+    else{
+        changeColor = currentFocusElement -> getFontColor();
+        changeColor.setBlue(changeValue);
+        currentFocusElement -> setFontColor(changeColor);
+    }
+    ui -> fontColorDisplayScreen -> setStyleSheet("background-color: rgb(" + QString::number(changeColor.red()) + ","
+                                                  + QString::number(changeColor.green()) + ","
+                                                  + QString::number(changeColor.blue()) + ");");
+    update();
+}
+
+void MainWindow::on_elementContextLineEdit_returnPressed()
+{
+    QString changeContext = ui -> elementContextLineEdit -> text();
+    if(currentFocusElement != Q_NULLPTR){
+        currentFocusElement->setContext(changeContext);
+        displayElementInfo(currentFocusElement);
+    }
     update();
 }
