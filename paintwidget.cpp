@@ -10,6 +10,7 @@ PaintWidget::PaintWidget(QWidget *parent) : QWidget{parent}
 {
     this -> setAttribute(Qt::WA_StyledBackground, true);
     currentHighlightElement = Q_NULLPTR;
+    bufferptr = Q_NULLPTR;
 }
 
 
@@ -51,6 +52,16 @@ void PaintWidget::mousePressEvent(QMouseEvent *event){
             break;
 
             case ARROW:
+            if(!noCollide){
+                if(bufferptr == Q_NULLPTR){
+                    bufferptr = (NodeElement*)findHoverOn(mousePos);
+                }
+
+                else{
+                    initArrow(bufferptr, (NodeElement*)findHoverOn(mousePos));
+                    bufferptr = Q_NULLPTR;
+                }
+            }
             break;
 
             case CURSOR:
@@ -121,6 +132,11 @@ void PaintWidget::initQueue(QPoint pt, int size, QString *list){
 void PaintWidget::initStack(QPoint pt, int size, QString *list){
     elementList.push_back(new StackElement(pt.x(), pt.y(), size, list));
     elementList.last()->setContext(QString::number(elementList.length()));
+}
+
+
+void PaintWidget::initArrow(NodeElement *from, NodeElement *to){
+    elementList.push_back(new ArrowElement(from, to));
 }
 
 

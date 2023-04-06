@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui -> stackSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
     ui -> queueSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
     ui -> graphSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
+    ui -> arrowSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
 
     this -> setWindowTitle("CSGraph");
     this -> displayDefaultInfo();
@@ -89,6 +90,15 @@ void MainWindow::on_queueSetButton_clicked()
     this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
     ui -> board -> setElement(QUEUE);
     setCurrentButton(ui -> queueSetButton);
+    this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
+}
+
+
+void MainWindow::on_arrowSetButton_clicked()
+{
+    this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
+    ui -> board -> setElement(ARROW);
+    setCurrentButton(ui -> arrowSetButton);
     this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
 }
 
@@ -377,3 +387,5 @@ void MainWindow::on_elementContextLineEdit_returnPressed()
     }
     update();
 }
+
+

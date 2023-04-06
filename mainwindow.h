@@ -123,6 +123,7 @@ private slots:
     void on_elementContextLineEdit_returnPressed();
 
 
+    void on_arrowSetButton_clicked();
 };
 
 

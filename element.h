@@ -287,37 +287,25 @@ class ArrowElement : public Element{
 public:
 
 
-    ArrowElement(int xStartPos, int yStartPos, int xEndPos, int yEndPos);
+    ArrowElement(NodeElement *from, NodeElement *to, bool d = 1);
 
 
     ~ArrowElement();
 
 
-    void setEndPos(int x, int y);
-
-
-    void setStartPos(int x, int y);
-
-
-    int getXEndPos();
-
-
-    int getYEndPos();
-
-
-    int getXStartPos();
-
-
-    int getYStartPos();
-
-
     void paint(QPainter* painter);
+
+
+    Element *hoverOn(QPoint pt);
 
 
 private:
 
 
-    int xEndPos, yEndPos;
+    NodeElement *fromElement, *toElement;
+
+
+    bool isDirected;
 
 
 };

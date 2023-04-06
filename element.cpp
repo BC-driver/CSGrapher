@@ -416,43 +416,19 @@ Element* QueueElement::hoverOn(QPoint pt){
 
 
 // ArrowElement's functions
-ArrowElement::ArrowElement(int xStartPos, int yStartPos, int xEndPos, int yEndPos) :
-    Element(xStartPos, yStartPos, ARROW){
-    this -> xEndPos = xEndPos;
-    this -> yEndPos = yEndPos;
+ArrowElement::ArrowElement(NodeElement *from, NodeElement *to, bool d) :
+    Element(from -> getXPos(), from -> getYPos(), ARROW){
+    fromElement = from;
+    toElement = to;
+    isDirected = d;
 }
 
 
 ArrowElement::~ArrowElement(){}
 
-void ArrowElement::setEndPos(int x, int y){
-    this -> xEndPos = x;
-    this -> yEndPos = y;
-}
 
-
-void ArrowElement::setStartPos(int x, int y){
-    setPos(x, y);
-}
-
-
-int ArrowElement::getXEndPos(){
-    return this -> xEndPos;
-}
-
-
-int ArrowElement::getYEndPos(){
-    return this -> yEndPos;
-}
-
-
-int ArrowElement::getXStartPos(){
-    return getXPos();
-}
-
-
-int ArrowElement::getYStartPos(){
-    return getYPos();
+Element* ArrowElement::hoverOn(QPoint pt){
+    return Q_NULLPTR; //TODO
 }
 
 
@@ -465,5 +441,18 @@ void ArrowElement::paint(QPainter *painter){
     painter -> setPen(pen);
 
     // draw the arrow
+    QPoint dirVec(toElement->getXPos() - fromElement->getXPos(),
+                  toElement->getYPos() - fromElement->getYPos()),
+            fromPt(fromElement->getXPos(), fromElement->getYPos()),
+            toPt(toElement->getXPos(), toElement->getYPos());
+    double len = sqrtl(dirVec.x() * dirVec.x() + dirVec.y() * dirVec.y());
+    fromPt.setX(fromPt.x() + dirVec.x() / len * (fromElement->getRadius()));
+    fromPt.setY(fromPt.y() + dirVec.y() / len * (fromElement->getRadius()));
+    toPt.setX(toPt.x() - dirVec.x() / len * (toElement->getRadius()));
+    toPt.setY(toPt.y() - dirVec.y() / len * (toElement->getRadius()));
+    painter -> drawLine(fromPt, toPt);
+//    if(isDirected){
+//        painter -> setBrush(edgeColor);
+//    }
 
 }

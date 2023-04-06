@@ -59,7 +59,7 @@ public:
     void initQueue(QPoint pt, int size, QString *list);
 
 
-    void initArrow(QPoint pt);
+    void initArrow(NodeElement *from, NodeElement *to);
 
 
     void updateGraphFile();
@@ -105,6 +105,9 @@ private:
 
 
     Element* currentHighlightElement;
+
+
+    NodeElement* bufferptr;
 
 
 };
