@@ -80,7 +80,13 @@ void PaintWidget::mousePressEvent(QMouseEvent *event){
                 if(ptr == eptr){
                     ptr = elementList[elementList.size() - 1];
                     elementList.pop_back();
-                    break;
+                }
+                else if(ptr -> getType() == ARROW){
+                    ArrowElement* aptr = (ArrowElement*)ptr;
+                    if(aptr -> getToElement() == eptr){
+                        ptr = elementList[elementList.size() - 1];
+                        elementList.pop_back();
+                    }
                 }
             }
             delete eptr;

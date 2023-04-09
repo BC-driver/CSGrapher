@@ -293,6 +293,18 @@ public:
     ~ArrowElement();
 
 
+    Element* getToElement();
+
+
+    Element* getFromElement();
+
+
+    void setToElement(NodeElement* nptr);
+
+
+    void setFromElement(NodeElement* nptr);
+
+
     void paint(QPainter* painter);
 
 

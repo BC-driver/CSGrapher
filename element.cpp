@@ -1,5 +1,7 @@
 #include "element.h"
 #include <QPainter>
+#include <QtMath>
+#include <QDebug>
 
 
 int Element::defaultLineWidth = 3;
@@ -428,7 +430,16 @@ ArrowElement::~ArrowElement(){}
 
 
 Element* ArrowElement::hoverOn(QPoint pt){
-    return Q_NULLPTR; //TODO
+    QPointF fromPt(fromElement->getXPos(), fromElement->getYPos()),
+            toPt(toElement->getXPos(), toElement->getYPos());
+    QPointF a = fromPt - pt, b = toPt - pt;
+    double alen = sqrtl(a.x() * a.x() + a.y() * a.y()), blen = sqrtl(b.x() * b.x() + b.y() * b.y()),
+           angle = qAcos((a.x() * b.x() + a.y() * b.y()) / alen / blen);
+    if(angle > 177.0 * M_PI / 180.0){
+        return this;
+    }
+
+    else return Q_NULLPTR;
 }
 
 
@@ -441,18 +452,41 @@ void ArrowElement::paint(QPainter *painter){
     painter -> setPen(pen);
 
     // draw the arrow
-    QPoint dirVec(toElement->getXPos() - fromElement->getXPos(),
+    QPointF dirVec(toElement->getXPos() - fromElement->getXPos(),
                   toElement->getYPos() - fromElement->getYPos()),
             fromPt(fromElement->getXPos(), fromElement->getYPos()),
             toPt(toElement->getXPos(), toElement->getYPos());
     double len = sqrtl(dirVec.x() * dirVec.x() + dirVec.y() * dirVec.y());
-    fromPt.setX(fromPt.x() + dirVec.x() / len * (fromElement->getRadius()));
-    fromPt.setY(fromPt.y() + dirVec.y() / len * (fromElement->getRadius()));
-    toPt.setX(toPt.x() - dirVec.x() / len * (toElement->getRadius()));
-    toPt.setY(toPt.y() - dirVec.y() / len * (toElement->getRadius()));
+    dirVec /= len;                                      // unitization;
+    fromPt += dirVec * (fromElement->getRadius());
+    toPt -= dirVec * (fromElement->getRadius());
     painter -> drawLine(fromPt, toPt);
-//    if(isDirected){
-//        painter -> setBrush(edgeColor);
-//    }
+    if(isDirected){
+        QPointF points[3] = {toPt}, dirVecVerti = QPointF(-dirVec.y(), dirVec.x());
+        points[1] = toPt - dirVec * (this -> getLineWidth()) * 4 - dirVecVerti * (this -> getLineWidth()) * 2;
+        points[2] = toPt - dirVec * (this -> getLineWidth()) * 4 + dirVecVerti * (this -> getLineWidth()) * 2;
+        painter -> setBrush(edgeColor);
+        painter -> drawPolygon(points, 3);
+        painter -> setBrush((Qt::NoBrush));
+    }
+}
 
+
+Element* ArrowElement::getToElement(){
+    return this -> toElement;
+}
+
+
+Element* ArrowElement::getFromElement(){
+    return this -> fromElement;
+}
+
+
+void ArrowElement::setToElement(NodeElement* nptr){
+    this -> toElement = nptr;
+}
+
+
+void ArrowElement::setFromElement(NodeElement *nptr){
+    this -> fromElement = nptr;
 }
