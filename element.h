@@ -157,6 +157,18 @@ public:
     ~BlockElement();
 
 
+    void setBlockWidth(int blockWidth);
+
+
+    void setBlockHeight(int blockHeight);
+
+
+    int getBlockWidth();
+
+
+    int getBlockHeight();
+
+
     void paint(QPainter *painter);
 
 
@@ -185,6 +197,9 @@ public:
 
 
     int getRadius();
+
+
+    void setRadius(int r);
 
 
     void paint(QPainter* painter);

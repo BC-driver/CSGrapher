@@ -17,15 +17,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui -> board, &PaintWidget::showElementInfoSignal, this, &MainWindow::displayElementInfo);
     connect(ui -> renderImageAction, &QAction::triggered, this, &MainWindow::renderImageActionSlot);
 
-    currentButton = ui -> cursorSetButton;
+
     idelColor = "(255, 255, 255)";
     activeColor = "(240, 240, 240)";
 
-    ui -> cursorSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
-    ui -> stackSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
-    ui -> queueSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
-    ui -> graphSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
-    ui -> arrowSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
+//    ui -> cursorSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
+//    ui -> stackSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
+//    ui -> queueSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
+//    ui -> graphSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
+//    ui -> arrowSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
 
     this -> setWindowTitle("CSGraph");
     this -> displayDefaultInfo();
@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui -> board -> setMouseTracking(true);
 
     currentFocusElement = Q_NULLPTR;
+    currentButton = ui -> cursorSetButton;
 
 }
 
@@ -60,46 +61,46 @@ QString MainWindow::getActiveColor(){
 
 void MainWindow::on_cursorSetButton_clicked()
 {
-    this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
+    // this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
     ui -> board -> setElement(CURSOR);
-    setCurrentButton(ui -> cursorSetButton);
-    this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
+    // setCurrentButton(ui -> cursorSetButton);
+    // this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
 }
 
 
 void MainWindow::on_graphSetButton_clicked()
 {
-    this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
+    // this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
     ui -> board -> setElement(NODE);
-    setCurrentButton(ui -> graphSetButton);
-    this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
+    // setCurrentButton(ui -> graphSetButton);
+    // this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
 }
 
 
 void MainWindow::on_stackSetButton_clicked()
 {
-    this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
+    // this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
     ui -> board -> setElement(STACK);
-    setCurrentButton(ui -> stackSetButton);
-    this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
+    // setCurrentButton(ui -> stackSetButton);
+    // this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
 }
 
 
 void MainWindow::on_queueSetButton_clicked()
 {
-    this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
+    // this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
     ui -> board -> setElement(QUEUE);
-    setCurrentButton(ui -> queueSetButton);
-    this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
+    // setCurrentButton(ui -> queueSetButton);
+    // this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
 }
 
 
 void MainWindow::on_arrowSetButton_clicked()
 {
-    this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
+    // this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
     ui -> board -> setElement(ARROW);
-    setCurrentButton(ui -> arrowSetButton);
-    this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
+    // setCurrentButton(ui -> arrowSetButton);
+    // this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
 }
 
 
@@ -167,6 +168,11 @@ void MainWindow::displayDefaultInfo(){
     ui -> fontColorDisplayScreen -> setStyleSheet("background-color: rgb(" + QString::number(fontcolor.red()) + ","
                                                   + QString::number(fontcolor.green()) + ","
                                                   + QString::number(fontcolor.blue()) + ");");
+    ui -> specialAttributeOneLabel -> setVisible(0);
+    ui -> specialAttributeOneLineedit -> setVisible(0);
+    ui -> specialAttributeTwoLabel -> setVisible(0);
+    ui -> specialAttributeTwoLineedit -> setVisible(0);
+
 
 }
 
@@ -174,22 +180,54 @@ void MainWindow::displayDefaultInfo(){
 void MainWindow::displayElementInfo(Element *eptr){
     currentFocusElement = eptr;
     QString typeStr = "";
+    ui -> specialAttributeOneLabel -> setVisible(0);
+    ui -> specialAttributeOneLineedit -> setVisible(0);
+    ui -> specialAttributeTwoLabel -> setVisible(0);
+    ui -> specialAttributeTwoLineedit -> setVisible(0);
+    NodeElement* nptr = (NodeElement*) eptr;
+    StackElement* sptr = (StackElement*) eptr;
+    QueueElement* qptr = (QueueElement*) eptr;
     switch (eptr -> getType()) {
         case NODE:
         typeStr = "节点";
+        ui -> specialAttributeOneLabel -> setText("节点半径:");
+        ui -> specialAttributeOneLabel -> setVisible(1);
+        ui -> specialAttributeOneLineedit -> setText(QString::number(nptr -> getRadius()));
+        ui -> specialAttributeOneLineedit -> setVisible(1);
         break;
 
         case STACK:
         typeStr = "栈";
+        ui -> specialAttributeOneLabel -> setText("块宽度:");
+        ui -> specialAttributeTwoLabel -> setText("块高度:");
+        ui -> specialAttributeOneLabel -> setVisible(1);
+        ui -> specialAttributeTwoLabel -> setVisible(1);
+        ui -> specialAttributeOneLineedit -> setText(QString::number(sptr -> getBlockWidth()));
+        ui -> specialAttributeTwoLineedit -> setText(QString::number(sptr -> getBlockHeight()));
+        ui -> specialAttributeOneLineedit -> setVisible(1);
+        ui -> specialAttributeTwoLineedit -> setVisible(1);
         break;
 
         case QUEUE:
         typeStr = "队列";
+        ui -> specialAttributeOneLabel -> setText("块宽度:");
+        ui -> specialAttributeTwoLabel -> setText("块高度:");
+        ui -> specialAttributeOneLabel -> setVisible(1);
+        ui -> specialAttributeTwoLabel -> setVisible(1);
+        ui -> specialAttributeOneLineedit -> setText(QString::number(qptr -> getBlockWidth()));
+        ui -> specialAttributeTwoLineedit -> setText(QString::number(qptr -> getBlockHeight()));
+        ui -> specialAttributeOneLineedit -> setVisible(1);
+        ui -> specialAttributeTwoLineedit -> setVisible(1);
         break;
 
         case BLOCK:
         typeStr = "块";
         break;
+
+        case ARROW:
+        typeStr = "边";
+        break;
+
     }
     ui -> InfoTitle -> setText(typeStr + eptr -> getContext() + "参数:");
     ui -> elementContextLineEdit -> setText(eptr -> getContext());
@@ -389,3 +427,41 @@ void MainWindow::on_elementContextLineEdit_returnPressed()
 }
 
 
+
+void MainWindow::on_specialAttributeOneLineedit_returnPressed()
+{
+    int value = ui -> specialAttributeOneLineedit -> text().toInt();
+    elementType type = currentFocusElement -> getType();
+    if(type == NODE){
+        NodeElement* ptr = (NodeElement*) currentFocusElement;
+        ptr -> setRadius(value);
+    }
+
+    else if(type == STACK){
+        StackElement* ptr = (StackElement*) currentFocusElement;
+        ptr -> setBlockWidth(value);
+    }
+
+    else if(type == QUEUE){
+        QueueElement* ptr = (QueueElement*) currentFocusElement;
+        ptr -> setBlockWidth(value);
+    }
+    update();
+}
+
+
+void MainWindow::on_specialAttributeTwoLineedit_returnPressed()
+{
+    int value = ui -> specialAttributeTwoLineedit -> text().toInt();
+    elementType type = currentFocusElement -> getType();
+    if(type == STACK){
+        StackElement* ptr = (StackElement*) currentFocusElement;
+        ptr -> setBlockHeight(value);
+    }
+
+    else if(type == QUEUE){
+        QueueElement* ptr = (QueueElement*) currentFocusElement;
+        ptr -> setBlockHeight(value);
+    }
+    update();
+}

@@ -124,6 +124,8 @@ private slots:
 
 
     void on_arrowSetButton_clicked();
+    void on_specialAttributeOneLineedit_returnPressed();
+    void on_specialAttributeTwoLineedit_returnPressed();
 };
 
 

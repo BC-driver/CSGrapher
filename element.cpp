@@ -180,6 +180,26 @@ void BlockElement::paint(QPainter *painter){
 }
 
 
+void BlockElement::setBlockWidth(int blockWidth){
+    this -> blockWidth = blockWidth;
+}
+
+
+void BlockElement::setBlockHeight(int blockHeight){
+    this -> blockHeight = blockHeight;
+}
+
+
+int BlockElement::getBlockWidth(){
+    return this -> blockWidth;
+}
+
+
+int BlockElement::getBlockHeight(){
+    return this -> blockHeight;
+}
+
+
 Element* BlockElement::hoverOn(QPoint pt){
     bool inXRange = xPos - blockWidth * 0.5 <= pt.x() && pt.x() <= xPos + blockWidth * 0.5;
     bool inYRange = yPos - blockHeight * 0.5 <= pt.y() && pt.y() <= yPos + blockHeight * 0.5;
@@ -201,6 +221,11 @@ NodeElement::~NodeElement(){}
 
 int NodeElement::getRadius(){
     return this -> radius;
+}
+
+
+void NodeElement::setRadius(int r){
+    this -> radius = r;
 }
 
 
@@ -237,7 +262,7 @@ StackElement::StackElement(int x, int y, int n, QString *list, int bw, int bh) :
     this -> blockWidth = bw;
     this -> blockHeight = bh;
     for(int i = 1;i <= this -> size;i++){
-        BlockElement* bptr = new BlockElement(x, y + blockHeight * i);
+        BlockElement* bptr = new BlockElement(x, y + blockHeight * i, blockWidth, blockHeight);
         blocks.push_back(bptr);
         bptr -> setContext(list[i - 1]);
     }
@@ -293,8 +318,12 @@ void StackElement::paint(QPainter *painter){
                         this -> xPos + this -> blockWidth * 0.5, this -> yPos + this -> blockHeight * (this -> size + 0.5));
 
     // draw the blocks
-    for(int i = 0;i < this -> size;i++){
-        blocks[i]->paint(painter);
+    for(int i = 0;i < blocks.size();i++){
+        BlockElement* b = blocks[i];
+        b -> setBlockWidth(this -> blockWidth);
+        b -> setBlockHeight(this -> blockHeight);
+        b -> setPos(getXPos(), getYPos() + blockHeight * (i + 1));
+        b -> paint(painter);
     }
 
     // draw the description
@@ -329,7 +358,7 @@ QueueElement::QueueElement(int x, int y, int n, QString *list, int bw, int bh) :
     this -> blockWidth = bw;
     this -> blockHeight = bh;
     for(int i = 1;i <= this -> size;i++){
-        BlockElement* bptr = new BlockElement(x + blockWidth * (i - 0.25), y);
+        BlockElement* bptr = new BlockElement(x + blockWidth * (i - 0.25), y, blockWidth, blockHeight);
         blocks.push_back(bptr);
         bptr -> setContext(list[i - 1]);
     }
@@ -387,7 +416,11 @@ void QueueElement::paint(QPainter *painter){
                         this -> xPos + this -> blockWidth * (this -> size + 0.75), this -> yPos + this -> blockHeight * 0.5);
 
     // draw the blocks
-    for(auto b : blocks){
+    for(int i = 0;i < blocks.size();i++){
+        BlockElement* b = blocks[i];
+        b -> setBlockWidth(this -> blockWidth);
+        b -> setBlockHeight(this -> blockHeight);
+        b -> setPos(getXPos() + blockWidth * (i + 0.75), getYPos());
         b -> paint(painter);
     }
 

@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QTextStream>
+#include <QDebug>
 
 
 PaintWidget::PaintWidget(QWidget *parent) : QWidget{parent}
@@ -36,29 +37,30 @@ void PaintWidget::paintEvent(QPaintEvent *event){
 void PaintWidget::mousePressEvent(QMouseEvent *event){
     if(event -> button() == Qt::LeftButton){
         QPoint mousePos = event -> pos();
-        QString temp[1] = {"1"};
-        bool noCollide = findHoverOn(mousePos) == Q_NULLPTR;
+        QString temp[2] = {"1", "2"};
+        Element* hoveringElement = findHoverOn(mousePos);
+        bool noCollide = hoveringElement == Q_NULLPTR;
         switch(currentDrawingElement){
             case NODE:
             if(noCollide) initNode(mousePos);
             break;
 
             case STACK:
-            if(noCollide) initStack(mousePos, 1, temp);
+            if(noCollide) initStack(mousePos, 2, temp);
             break;
 
             case QUEUE:
-            if(noCollide) initQueue(mousePos, 1, temp);
+            if(noCollide) initQueue(mousePos, 2, temp);
             break;
 
             case ARROW:
-            if(!noCollide){
+            if(!noCollide && hoveringElement -> getType() == NODE){
                 if(bufferptr == Q_NULLPTR){
-                    bufferptr = (NodeElement*)findHoverOn(mousePos);
+                    bufferptr = (NodeElement*)hoveringElement;
                 }
 
-                else{
-                    initArrow(bufferptr, (NodeElement*)findHoverOn(mousePos));
+                else if(bufferptr != hoveringElement){
+                    initArrow(bufferptr, (NodeElement*)hoveringElement);
                     bufferptr = Q_NULLPTR;
                 }
             }
@@ -69,27 +71,37 @@ void PaintWidget::mousePressEvent(QMouseEvent *event){
             break;
         }
         update();
-        //updateGraphFile();
+        updateGraphFile();
     }
 
     else if(event -> button() == Qt::RightButton){
         QPoint mousePos = event -> pos();
         Element *eptr = findHoverOn(mousePos);
         if(eptr != Q_NULLPTR && eptr -> getType() != BLOCK){
-            for(auto &ptr : elementList){
+            QVector <Element*> deleteElement;
+            for(int i = 0;i < elementList.size();i++){
+                Element *&ptr = elementList[i];
                 if(ptr == eptr){
+                    //delete ptr;
+                    deleteElement.push_back(elementList[i]);
                     ptr = elementList[elementList.size() - 1];
                     elementList.pop_back();
+                    i--;
                 }
                 else if(ptr -> getType() == ARROW){
                     ArrowElement* aptr = (ArrowElement*)ptr;
-                    if(aptr -> getToElement() == eptr){
+                    if(aptr -> getToElement() == eptr || aptr -> getFromElement() == eptr){
+                        //delete ptr;
+                        deleteElement.push_back(elementList[i]);
                         ptr = elementList[elementList.size() - 1];
                         elementList.pop_back();
+                        i--;
                     }
                 }
             }
-            delete eptr;
+            for(auto ptr : deleteElement){
+                delete ptr;
+            }
         }
     }
 }
@@ -105,6 +117,9 @@ void PaintWidget::mouseMoveEvent(QMouseEvent *event){
     if(currentHighlightElement != Q_NULLPTR){
         currentHighlightElement -> setLineWidth(currentHighlightElement -> getLineWidth() + 3);
         currentHighlightElement -> setFontSize(currentHighlightElement -> getFontSize() + 3);
+    }
+    if(event -> buttons() & Qt::LeftButton && currentHighlightElement != Q_NULLPTR){
+        currentHighlightElement -> setPos(event -> pos().x(), event -> pos().y());
     }
     update();
 }
