@@ -314,6 +314,12 @@ public:
     Element* getFromElement();
 
 
+    bool getIsDirected();
+
+
+    void setIsDirected(bool state);
+
+
     void setToElement(NodeElement* nptr);
 
 

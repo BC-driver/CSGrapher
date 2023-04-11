@@ -492,7 +492,8 @@ void ArrowElement::paint(QPainter *painter){
     double len = sqrtl(dirVec.x() * dirVec.x() + dirVec.y() * dirVec.y());
     dirVec /= len;                                      // unitization;
     fromPt += dirVec * (fromElement->getRadius());
-    toPt -= dirVec * (fromElement->getRadius());
+    toPt -= dirVec * (toElement->getRadius());
+    QPointF nmlVec(-dirVec.y(), dirVec.x());
     painter -> drawLine(fromPt, toPt);
     if(isDirected){
         QPointF points[3] = {toPt}, dirVecVerti = QPointF(-dirVec.y(), dirVec.x());
@@ -502,6 +503,23 @@ void ArrowElement::paint(QPainter *painter){
         painter -> drawPolygon(points, 3);
         painter -> setBrush((Qt::NoBrush));
     }
+    // draw the description
+    pen.setColor(this -> fontColor);
+    painter -> setPen(pen);
+    painter -> setFont(QFont("Consolas", this -> fontSize));
+    if(toPt.x() > fromPt.x()){
+        painter -> translate(fromPt);
+        painter -> rotate(qAtan(dirVec.y() / dirVec.x()) * 180.0 / M_PI);
+    }
+
+    else{
+        painter -> translate(toPt);
+        painter -> rotate(qAtan(dirVec.y() / dirVec.x()) * 180.0 / M_PI);
+    }
+    // qDebug() << qAtan(dirVec.y() / dirVec.x()) * 180.0 / M_PI;
+    painter -> drawText(QRectF(0, 0, len - fromElement -> getRadius() - toElement -> getRadius(), -lineWidth * 10),
+                        Qt::AlignCenter, context);
+    painter -> resetTransform();
 }
 
 
@@ -512,6 +530,16 @@ Element* ArrowElement::getToElement(){
 
 Element* ArrowElement::getFromElement(){
     return this -> fromElement;
+}
+
+
+bool ArrowElement::getIsDirected(){
+    return this -> isDirected;
+}
+
+
+void ArrowElement::setIsDirected(bool state){
+    this -> isDirected = state;
 }
 
 

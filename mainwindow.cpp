@@ -172,8 +172,8 @@ void MainWindow::displayDefaultInfo(){
     ui -> specialAttributeOneLineedit -> setVisible(0);
     ui -> specialAttributeTwoLabel -> setVisible(0);
     ui -> specialAttributeTwoLineedit -> setVisible(0);
-
-
+    ui -> directLabel -> setVisible(0);
+    ui -> directCheckBox -> setVisible(0);
 }
 
 
@@ -184,9 +184,12 @@ void MainWindow::displayElementInfo(Element *eptr){
     ui -> specialAttributeOneLineedit -> setVisible(0);
     ui -> specialAttributeTwoLabel -> setVisible(0);
     ui -> specialAttributeTwoLineedit -> setVisible(0);
+    ui -> directLabel -> setVisible(0);
+    ui -> directCheckBox -> setVisible(0);
     NodeElement* nptr = (NodeElement*) eptr;
     StackElement* sptr = (StackElement*) eptr;
     QueueElement* qptr = (QueueElement*) eptr;
+    ArrowElement* aptr = (ArrowElement*) eptr;
     switch (eptr -> getType()) {
         case NODE:
         typeStr = "节点";
@@ -226,6 +229,9 @@ void MainWindow::displayElementInfo(Element *eptr){
 
         case ARROW:
         typeStr = "边";
+        ui -> directLabel -> setVisible(1);
+        ui -> directCheckBox -> setVisible(1);
+        ui -> directCheckBox -> setChecked(aptr -> getIsDirected());
         break;
 
     }
@@ -462,6 +468,22 @@ void MainWindow::on_specialAttributeTwoLineedit_returnPressed()
     else if(type == QUEUE){
         QueueElement* ptr = (QueueElement*) currentFocusElement;
         ptr -> setBlockHeight(value);
+    }
+    update();
+}
+
+
+void MainWindow::on_directCheckBox_stateChanged(int arg1)
+{
+    if(currentFocusElement -> getType() != ARROW) return;
+
+    ArrowElement  *aptr = (ArrowElement*)currentFocusElement;
+    if(arg1){
+        aptr -> setIsDirected(true);
+    }
+
+    else{
+        aptr -> setIsDirected(false);
     }
     update();
 }
