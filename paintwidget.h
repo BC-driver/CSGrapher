@@ -12,8 +12,9 @@
 #define PAINTWIDGET_H
 
 #include <QWidget>
-#include <element.h>
 #include <QMouseEvent>
+#include "element.h"
+#include "logic.h"
 
 
 class PaintWidget : public QWidget
@@ -65,6 +66,9 @@ public:
     void updateGraphFile();
 
 
+    void updateLogic();
+
+
     Element* findHoverOn(QPoint pt);
 
 
@@ -108,6 +112,9 @@ private:
 
 
     NodeElement* bufferptr;
+
+
+    Logic logic;
 
 
 };

@@ -72,6 +72,7 @@ void PaintWidget::mousePressEvent(QMouseEvent *event){
         }
         update();
         updateGraphFile();
+        updateLogic();
     }
 
     else if(event -> button() == Qt::RightButton){
@@ -135,6 +136,11 @@ Element* PaintWidget::findHoverOn(QPoint pt){
 
 void PaintWidget::updateGraphFile(){
     emit fileUpdated();
+}
+
+
+void PaintWidget::updateLogic(){
+    logic = Logic(elementList);
 }
 
 

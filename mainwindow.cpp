@@ -486,4 +486,5 @@ void MainWindow::on_directCheckBox_stateChanged(int arg1)
         aptr -> setIsDirected(false);
     }
     update();
+    ui -> board -> updateLogic();
 }
