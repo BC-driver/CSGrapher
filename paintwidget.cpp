@@ -12,6 +12,9 @@ PaintWidget::PaintWidget(QWidget *parent) : QWidget{parent}
     this -> setAttribute(Qt::WA_StyledBackground, true);
     currentHighlightElement = Q_NULLPTR;
     bufferptr = Q_NULLPTR;
+    logic = new LogicModule();
+    logic -> update(elementList);
+    connect(logic, SIGNAL(updatePainter()), this, SLOT(update()));
 }
 
 
@@ -83,7 +86,6 @@ void PaintWidget::mousePressEvent(QMouseEvent *event){
             for(int i = 0;i < elementList.size();i++){
                 Element *&ptr = elementList[i];
                 if(ptr == eptr){
-                    //delete ptr;
                     deleteElement.push_back(elementList[i]);
                     ptr = elementList[elementList.size() - 1];
                     elementList.pop_back();
@@ -92,7 +94,6 @@ void PaintWidget::mousePressEvent(QMouseEvent *event){
                 else if(ptr -> getType() == ARROW){
                     ArrowElement* aptr = (ArrowElement*)ptr;
                     if(aptr -> getToElement() == eptr || aptr -> getFromElement() == eptr){
-                        //delete ptr;
                         deleteElement.push_back(elementList[i]);
                         ptr = elementList[elementList.size() - 1];
                         elementList.pop_back();
@@ -140,7 +141,21 @@ void PaintWidget::updateGraphFile(){
 
 
 void PaintWidget::updateLogic(){
-    logic = Logic(elementList);
+    logic -> update(elementList);
+}
+
+
+void PaintWidget::dfsFromNode(NodeElement *node){
+    int idx = logic -> findNodeIndex(node);
+    if(idx != -1) logic -> DFS(idx);
+    logic -> clearVis();
+}
+
+
+void PaintWidget::bfsFromNode(NodeElement *node){
+    int idx = logic -> findNodeIndex(node);
+    if(idx != -1) logic -> BFS(idx);
+    logic -> clearVis();
 }
 
 

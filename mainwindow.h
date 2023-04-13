@@ -133,6 +133,10 @@ private slots:
 
 
     void on_directCheckBox_stateChanged(int arg1);
+
+
+    void on_dfsButton_pressed();
+    void on_bfsButton_pressed();
 };
 
 

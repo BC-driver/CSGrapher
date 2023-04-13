@@ -297,7 +297,7 @@ border-color: rgb(0, 0, 0);</string>
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>261</width>
+            <width>271</width>
             <height>631</height>
            </rect>
           </property>
@@ -935,6 +935,39 @@ border-color: rgb(0, 0, 0);</string>
                </property>
                <property name="text">
                 <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="searchLayout">
+             <property name="spacing">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QPushButton" name="dfsButton">
+               <property name="font">
+                <font>
+                 <family>Consolas</family>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>DFS</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="bfsButton">
+               <property name="font">
+                <font>
+                 <family>Consolas</family>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>BFS</string>
                </property>
               </widget>
              </item>

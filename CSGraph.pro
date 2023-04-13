@@ -17,14 +17,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     element.cpp \
-    logic.cpp \
+    logicmodule.cpp \
     main.cpp \
     mainwindow.cpp \
     paintwidget.cpp
 
 HEADERS += \
     element.h \
-    logic.h \
+    logicmodule.h \
     mainwindow.h \
     paintwidget.h
 

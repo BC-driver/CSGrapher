@@ -174,6 +174,8 @@ void MainWindow::displayDefaultInfo(){
     ui -> specialAttributeTwoLineedit -> setVisible(0);
     ui -> directLabel -> setVisible(0);
     ui -> directCheckBox -> setVisible(0);
+    ui -> dfsButton -> setVisible(0);
+    ui -> bfsButton -> setVisible(0);
 }
 
 
@@ -186,6 +188,8 @@ void MainWindow::displayElementInfo(Element *eptr){
     ui -> specialAttributeTwoLineedit -> setVisible(0);
     ui -> directLabel -> setVisible(0);
     ui -> directCheckBox -> setVisible(0);
+    ui -> dfsButton -> setVisible(0);
+    ui -> bfsButton -> setVisible(0);
     NodeElement* nptr = (NodeElement*) eptr;
     StackElement* sptr = (StackElement*) eptr;
     QueueElement* qptr = (QueueElement*) eptr;
@@ -197,6 +201,8 @@ void MainWindow::displayElementInfo(Element *eptr){
         ui -> specialAttributeOneLabel -> setVisible(1);
         ui -> specialAttributeOneLineedit -> setText(QString::number(nptr -> getRadius()));
         ui -> specialAttributeOneLineedit -> setVisible(1);
+        ui -> dfsButton -> setVisible(1);
+        ui -> bfsButton -> setVisible(1);
         break;
 
         case STACK:
@@ -487,4 +493,19 @@ void MainWindow::on_directCheckBox_stateChanged(int arg1)
     }
     update();
     ui -> board -> updateLogic();
+}
+
+
+void MainWindow::on_dfsButton_pressed()
+{
+    if(currentFocusElement -> getType() == NODE){
+        ui -> board -> dfsFromNode((NodeElement*)currentFocusElement);
+    }
+}
+
+void MainWindow::on_bfsButton_pressed()
+{
+    if(currentFocusElement -> getType() == NODE){
+        ui -> board -> bfsFromNode((NodeElement*)currentFocusElement);
+    }
 }

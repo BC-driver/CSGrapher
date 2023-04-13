@@ -14,7 +14,7 @@
 #include <QWidget>
 #include <QMouseEvent>
 #include "element.h"
-#include "logic.h"
+#include "logicmodule.h"
 
 
 class PaintWidget : public QWidget
@@ -69,6 +69,12 @@ public:
     void updateLogic();
 
 
+    void dfsFromNode(NodeElement* node);
+
+
+    void bfsFromNode(NodeElement* node);
+
+
     Element* findHoverOn(QPoint pt);
 
 
@@ -114,7 +120,7 @@ private:
     NodeElement* bufferptr;
 
 
-    Logic logic;
+    LogicModule* logic;
 
 
 };
