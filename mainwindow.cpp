@@ -129,7 +129,7 @@ void MainWindow::updateGraphDataText(){
     QFile file(filePath);
     file.open(QIODevice::ReadOnly);
     QByteArray arr = file.readAll();
-    ui -> MapInfo -> setText(arr);
+    ui -> quickInputTextEdit -> setText(arr);
 }
 
 
@@ -483,7 +483,7 @@ void MainWindow::on_directCheckBox_stateChanged(int arg1)
 {
     if(currentFocusElement -> getType() != ARROW) return;
 
-    ArrowElement  *aptr = (ArrowElement*)currentFocusElement;
+    ArrowElement *aptr = (ArrowElement*)currentFocusElement;
     if(arg1){
         aptr -> setIsDirected(true);
     }
@@ -498,14 +498,22 @@ void MainWindow::on_directCheckBox_stateChanged(int arg1)
 
 void MainWindow::on_dfsButton_pressed()
 {
-    if(currentFocusElement -> getType() == NODE){
+    if(currentFocusElement != Q_NULLPTR && currentFocusElement -> getType() == NODE){
         ui -> board -> dfsFromNode((NodeElement*)currentFocusElement);
     }
 }
 
 void MainWindow::on_bfsButton_pressed()
 {
-    if(currentFocusElement -> getType() == NODE){
+    if(currentFocusElement != Q_NULLPTR && currentFocusElement -> getType() == NODE){
         ui -> board -> bfsFromNode((NodeElement*)currentFocusElement);
+    }
+}
+
+
+void MainWindow::on_polyLayout_pressed()
+{
+    if(currentFocusElement != Q_NULLPTR && currentFocusElement -> getType() == NODE){
+        ui -> board -> polyLayout((NodeElement*)currentFocusElement);
     }
 }

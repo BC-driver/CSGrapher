@@ -1,12 +1,11 @@
 /*****************************************************************************
 * \file element.h
 * \author Zirui Xu
-* \date 2023/04/04
-* \version v0.4
+* \date 2023/04/16
+* \version v0.5
 * \brief 定义了绘图的各类基本元素
 * \note Copyright (c) 2020-2030 南京理工大学
-* \remarks 添加调色功能, 鼠标悬浮动态显示, 参数调整功能.
-*          重构BlockElement使得其继承Element基类,程序结构更简明
+* \remarks
 ******************************************************************************/
 #ifndef ELEMENT_H
 #define ELEMENT_H
@@ -40,6 +39,9 @@ public:
 
 
     void setPos(int x, int y);
+
+
+    void setPos(QPointF pt);
 
 
     void setEdgeColor(QColor color);

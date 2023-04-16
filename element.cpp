@@ -32,6 +32,12 @@ void Element::setPos(int x, int y){
 }
 
 
+void Element::setPos(QPointF pt){
+    xPos = pt.x();
+    yPos = pt.y();
+}
+
+
 void Element::setEdgeColor(QColor color){
     edgeColor = color;
 }

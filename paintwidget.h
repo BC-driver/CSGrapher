@@ -1,12 +1,11 @@
 /*****************************************************************************
 * \file paintwidget.h
 * \author Zirui Xu
-* \date 2023/04/04
-* \version v0.4
+* \date 2023/04/16
+* \version v0.5
 * \brief 定义了自定义画板控件
 * \note Copyright (c) 2020-2030 南京理工大学
-* \remarks 添加调色功能, 鼠标悬浮动态显示, 参数调整功能.
-*          添加删除功能
+* \remarks
 ******************************************************************************/
 #ifndef PAINTWIDGET_H
 #define PAINTWIDGET_H
@@ -73,6 +72,9 @@ public:
 
 
     void bfsFromNode(NodeElement* node);
+
+
+    void polyLayout(NodeElement* node);
 
 
     Element* findHoverOn(QPoint pt);

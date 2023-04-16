@@ -1,3 +1,14 @@
+/*****************************************************************************
+* \file element.h
+* \author Zirui Xu
+* \date 2023/04/16
+* \version v0.5
+* \brief 实现图的抽象化,遍历,排布及其可视化
+* \note Copyright (c) 2020-2030 南京理工大学
+* \remarks 添加Element类的抽象化使其更易于处理
+*          实现BFS,DFS两种搜索方式
+*          实现多边形排布
+******************************************************************************/
 #ifndef LOGICMODULE_H
 #define LOGICMODULE_H
 
@@ -48,15 +59,25 @@ public:
     void BFS(int s);
 
 
+    void polyLayout(int s);
+
+
+    QPointF rotateN(QPointF ori, double n);
+
+
     void update(QList <Element*> elementList);
 
 
 private:
 
-
+    struct edge{
+        int u, v;
+        bool isAdditional;
+    };
     QVector <NodeElement*> nodes;
     QVector <ArrowElement*> edges;
     QVector <int> graph[1000];
+    QVector <edge> path;
     QVector <int> vis;
     QColor highlightColor;
     QMap <int, QColor> originNodeColor, originEdgeColor;

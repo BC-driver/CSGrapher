@@ -159,6 +159,13 @@ void PaintWidget::bfsFromNode(NodeElement *node){
 }
 
 
+void PaintWidget::polyLayout(NodeElement *node){
+    int idx = logic -> findNodeIndex(node);
+    if(idx != -1) logic -> polyLayout(idx);
+    logic -> clearVis();
+}
+
+
 void PaintWidget::initNode(QPoint pt){
     elementList.push_back(new NodeElement(pt.x(), pt.y()));
     elementList.last()->setContext(QString::number(elementList.length()));

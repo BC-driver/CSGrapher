@@ -297,7 +297,7 @@ border-color: rgb(0, 0, 0);</string>
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>271</width>
+            <width>311</width>
             <height>631</height>
            </rect>
           </property>
@@ -974,6 +974,54 @@ border-color: rgb(0, 0, 0);</string>
             </layout>
            </item>
            <item>
+            <layout class="QHBoxLayout" name="setLayout">
+             <property name="spacing">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QPushButton" name="polyLayout">
+               <property name="font">
+                <font>
+                 <family>等线</family>
+                 <pointsize>14</pointsize>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>多边形</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="bfsButton_2">
+               <property name="font">
+                <font>
+                 <family>Consolas</family>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>树形</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="dfsButton_3">
+               <property name="font">
+                <font>
+                 <family>Consolas</family>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>拓扑排序</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
             <spacer name="verticalSpacer_2">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -1028,12 +1076,12 @@ border-color: rgb(0, 0, 0);</string>
              </font>
             </property>
             <property name="text">
-             <string>Data:</string>
+             <string>QuickInput:</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QTextEdit" name="MapInfo">
+           <widget class="QTextEdit" name="quickInputTextEdit">
             <property name="minimumSize">
              <size>
               <width>300</width>

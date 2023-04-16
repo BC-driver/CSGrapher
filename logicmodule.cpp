@@ -3,6 +3,7 @@
 #include <QTime>
 #include <QCoreApplication>
 #include <QQueue>
+#include <QtMath>
 
 LogicModule::LogicModule(QObject *parent) : QObject(parent){
     highlightColor = QColor(255,184,131);
@@ -56,8 +57,9 @@ int LogicModule::findNodeIndex(NodeElement *node){
 void LogicModule::highlightEdge(int u, int v){
     for(int i = 0;i < edges.size();i++){
         ArrowElement* &e = edges[i];
-        if(e -> getFromElement() == nodes[u]
-           && e -> getToElement() == nodes[v]){
+        if((e -> getFromElement() == nodes[u] && e -> getToElement() == nodes[v])
+           ||
+           (!(e -> getIsDirected()) && e -> getFromElement() == nodes[v] && e -> getToElement() == nodes[u])){
             originEdgeColor[i] = e -> getEdgeColor();
             e -> setEdgeColor(highlightColor);
             e -> setLineWidth(e -> getLineWidth() + 3);
@@ -72,8 +74,9 @@ void LogicModule::highlightEdge(int u, int v){
 void LogicModule::deHighlightEdge(int u, int v){
     for(int i = 0;i < edges.size();i++){
         ArrowElement* &e = edges[i];
-        if(e -> getFromElement() == nodes[u]
-           && e -> getToElement() == nodes[v]){
+        if((e -> getFromElement() == nodes[u] && e -> getToElement() == nodes[v])
+           ||
+           (!(e -> getIsDirected()) && e -> getFromElement() == nodes[v] && e -> getToElement() == nodes[u])){
             e -> setEdgeColor(originEdgeColor[i]);
             e -> setLineWidth(e -> getLineWidth() - 3);
             e -> setFontSize(e -> getFontSize() - 3);
@@ -105,11 +108,13 @@ void LogicModule::DFS(int u){
     vis[u] = 1;
     highlightNode(u);
     sleepMsec(500);
-    for(auto v : graph[u]){
-        if(!vis[v]){
-            highlightEdge(u, v);
-            DFS(v);
-            deHighlightEdge(u, v);
+    for(auto idx : graph[u]){
+        edge &e = path[idx];
+        if(e.isAdditional) continue;
+        if(!vis[e.v]){
+            highlightEdge(u, e.v);
+            DFS(e.v);
+            deHighlightEdge(u, e.v);
         }
     }
     deHighlightNode(u);
@@ -126,12 +131,14 @@ void LogicModule::BFS(int s){
         int u = q.front();
         q.pop_front();
         vis[u] = 1;
-        for(auto v : graph[u]){
-            if(!vis[v]){
-                q.push_back(v);
-                visNodes.push_back(v);
-                highlightNode(v);
-                highlightEdge(u, v);
+        for(auto idx : graph[u]){
+            edge &e = path[idx];
+            if(e.isAdditional) continue;
+            if(!vis[e.v]){
+                q.push_back(e.v);
+                visNodes.push_back(e.v);
+                highlightNode(e.v);
+                highlightEdge(u, e.v);
                 sleepMsec(500);
             }
         }
@@ -139,10 +146,51 @@ void LogicModule::BFS(int s){
     sleepMsec(1000);
     for(auto u : visNodes){
         deHighlightNode(u);
-        for(auto v : graph[u]){
-            deHighlightEdge(u, v);
+        for(auto idx : graph[u]){
+            edge &e = path[idx];
+            if(e.isAdditional) continue;
+            deHighlightEdge(u, e.v);
         }
     }
+}
+
+
+void LogicModule::polyLayout(int s){
+    clearVis();
+    QQueue <int> q, visNodes;
+    q.push_back(s);
+    visNodes.push_back(s);
+    vis[s] = 1;
+    while(!q.empty()){
+        int u = q.front();
+        q.pop_front();
+        for(auto idx : graph[u]){
+            edge &e = path[idx];
+            if(!vis[e.v]){
+                vis[e.v] = 1;
+                q.push_back(e.v);
+                visNodes.push_back(e.v);
+            }
+        }
+    }
+    double n = visNodes.size();
+    QPointF ori(nodes[s]->getXPos(), nodes[s]->getYPos()), toCenter(50.0, 50.0 / qTan(M_PI / n));
+    QPointF toTarget = -toCenter;
+    for(int i = 1;i < n;i++){
+        toTarget = rotateN(toTarget, n);
+        nodes[visNodes[i]] -> setPos(ori + toCenter + toTarget);
+    }
+    for(auto i : visNodes){
+        qDebug() << i;
+    }
+    emit updatePainter();
+}
+
+
+QPointF LogicModule::rotateN(QPointF ori, double n){
+    double c = qCos(2.0 * M_PI / n), s = qSin(2.0 * M_PI / n);
+    double x = c * ori.x() - s * ori.y(), y = s * ori.x() + c * ori.y();
+    return QPointF(x, y);
 }
 
 
@@ -170,10 +218,10 @@ void LogicModule::update(QList<Element *> elementList){
         ArrowElement* &e = edges[i];
         int u = findFromNode(e), v = findToNode(e);
         if(u != -1 && v != -1){
-            graph[u].push_back(v);
-            if(e -> getIsDirected() == 0){
-                graph[v].push_back(u);
-            }
+            path.push_back((edge){u, v, 0});
+            path.push_back((edge){v, u, e -> getIsDirected()});
+            graph[u].push_back(path.size() - 2);
+            graph[v].push_back(path.size() - 1);
         }
     }
     for(int i = 0;i < nodes.size();i++){

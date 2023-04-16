@@ -5,7 +5,7 @@
 * \version v0.5
 * \brief 定义了整个窗体上的各类控件
 * \note Copyright (c) 2020-2030 南京理工大学
-* \remarks 实现更多的参数调整,对不同类型元素个性化参数调整
+* \remarks 添加遍历演示按钮与排布功能按钮
 ******************************************************************************/
 
 #ifndef MAINWINDOW_H
@@ -137,6 +137,7 @@ private slots:
 
     void on_dfsButton_pressed();
     void on_bfsButton_pressed();
+    void on_polyLayout_pressed();
 };
 
 
