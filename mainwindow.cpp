@@ -176,6 +176,9 @@ void MainWindow::displayDefaultInfo(){
     ui -> directCheckBox -> setVisible(0);
     ui -> dfsButton -> setVisible(0);
     ui -> bfsButton -> setVisible(0);
+    ui -> polyLayout -> setVisible(0);
+    ui -> topoLayout -> setVisible(0);
+    ui -> treeLayout -> setVisible(0);
 }
 
 
@@ -190,6 +193,9 @@ void MainWindow::displayElementInfo(Element *eptr){
     ui -> directCheckBox -> setVisible(0);
     ui -> dfsButton -> setVisible(0);
     ui -> bfsButton -> setVisible(0);
+    ui -> polyLayout -> setVisible(0);
+    ui -> topoLayout -> setVisible(0);
+    ui -> treeLayout -> setVisible(0);
     NodeElement* nptr = (NodeElement*) eptr;
     StackElement* sptr = (StackElement*) eptr;
     QueueElement* qptr = (QueueElement*) eptr;
@@ -203,6 +209,9 @@ void MainWindow::displayElementInfo(Element *eptr){
         ui -> specialAttributeOneLineedit -> setVisible(1);
         ui -> dfsButton -> setVisible(1);
         ui -> bfsButton -> setVisible(1);
+        ui -> polyLayout -> setVisible(1);
+        ui -> topoLayout -> setVisible(1);
+        ui -> treeLayout -> setVisible(1);
         break;
 
         case STACK:

@@ -180,9 +180,6 @@ void LogicModule::polyLayout(int s){
         toTarget = rotateN(toTarget, n);
         nodes[visNodes[i]] -> setPos(ori + toCenter + toTarget);
     }
-    for(auto i : visNodes){
-        qDebug() << i;
-    }
     emit updatePainter();
 }
 

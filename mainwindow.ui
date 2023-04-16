@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1228</width>
-    <height>744</height>
+    <width>1247</width>
+    <height>759</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -282,13 +282,13 @@ border-color: rgb(0, 0, 0);</string>
         <widget class="QWidget" name="objectInfo" native="true">
          <property name="minimumSize">
           <size>
-           <width>270</width>
+           <width>350</width>
            <height>250</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>250</width>
+           <width>300</width>
            <height>16777215</height>
           </size>
          </property>
@@ -297,8 +297,8 @@ border-color: rgb(0, 0, 0);</string>
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>311</width>
-            <height>631</height>
+            <width>341</width>
+            <height>651</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="objectInfoLayout">
@@ -994,7 +994,7 @@ border-color: rgb(0, 0, 0);</string>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="bfsButton_2">
+              <widget class="QPushButton" name="treeLayout">
                <property name="font">
                 <font>
                  <family>Consolas</family>
@@ -1007,7 +1007,7 @@ border-color: rgb(0, 0, 0);</string>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="dfsButton_3">
+              <widget class="QPushButton" name="topoLayout">
                <property name="font">
                 <font>
                  <family>Consolas</family>
@@ -1048,6 +1048,12 @@ border-color: rgb(0, 0, 0);</string>
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <property name="spacing">
@@ -1109,7 +1115,7 @@ border-color: rgb(0, 0, 0);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1228</width>
+     <width>1247</width>
      <height>26</height>
     </rect>
    </property>
