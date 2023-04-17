@@ -118,12 +118,13 @@ void LogicModule::DFS(int u){
         }
     }
     deHighlightNode(u);
+    vis[u] = 0;
 }
 
 
 void LogicModule::BFS(int s){
     clearVis();
-    QQueue <int> q, visNodes;
+    QQueue <int> q, visNodes, visPaths;
     q.push_back(s);
     visNodes.push_back(s);
     highlightNode(s);
@@ -135,8 +136,10 @@ void LogicModule::BFS(int s){
             edge &e = path[idx];
             if(e.isAdditional) continue;
             if(!vis[e.v]){
+                vis[e.v] = 1;
                 q.push_back(e.v);
                 visNodes.push_back(e.v);
+                visPaths.push_back(idx);
                 highlightNode(e.v);
                 highlightEdge(u, e.v);
                 sleepMsec(500);
@@ -146,11 +149,10 @@ void LogicModule::BFS(int s){
     sleepMsec(1000);
     for(auto u : visNodes){
         deHighlightNode(u);
-        for(auto idx : graph[u]){
-            edge &e = path[idx];
-            if(e.isAdditional) continue;
-            deHighlightEdge(u, e.v);
-        }
+    }
+    for(auto p : visPaths){
+        edge &e = path[p];
+        deHighlightEdge(e.u, e.v);
     }
 }
 
@@ -179,6 +181,122 @@ void LogicModule::polyLayout(int s){
     for(int i = 1;i < n;i++){
         toTarget = rotateN(toTarget, n);
         nodes[visNodes[i]] -> setPos(ori + toCenter + toTarget);
+    }
+    emit updatePainter();
+}
+
+
+bool cmp(QPair<int, int> a, QPair<int, int> b){
+    if(a.second == b.second) return a.first < b.first;
+    else return a.second < b.second;
+}
+
+
+void LogicModule::treeLayout(int s){
+    clearVis();
+    int inf = 0x3f3f3f3f;
+    double vSpacing = 100, hSpacing = 100;
+    QQueue <int> q;
+    QVector <int> level(nodes.size() + 5), pre(nodes.size() + 5, -1);
+    int minlevel = 1, maxlevel = -inf;
+    q.push_back(s);
+    level[s] = 1;
+    while(!q.empty()){
+        int u = q.front();
+        q.pop_front();
+        for(auto idx : graph[u]){
+            edge &e = path[idx];
+            if(!vis[e.v]){
+                level[e.v] = level[u] + (e.isAdditional ? -1 : 1);
+                if(e.isAdditional){
+                    pre[u] = e.v;
+                }
+
+                else{
+                    pre[e.v] = u;
+                }
+                minlevel = qMin(minlevel, level[e.v]);
+                maxlevel = qMax(maxlevel, level[e.v]);
+                vis[e.v] = 1;
+                q.push_back(e.v);
+            }
+        }
+    }
+    QVector <QPair<int, int> > tree[maxlevel - minlevel + 2];
+    for(int i = 0;i < nodes.size();i++){
+        if(level[i] != inf){
+            tree[level[i] - minlevel].push_back(qMakePair(i, pre[i]));
+        }
+    }
+    int maxNodeCnt = 0;
+    for(int i = 0;i <= maxlevel - minlevel;i++){
+        std::sort(tree[i].begin(), tree[i].end(), cmp);
+        maxNodeCnt = qMax(maxNodeCnt, (int)tree[i].size());
+    }
+    QPointF ori(nodes[s]->getXPos(), nodes[s]->getYPos());
+    double width = maxNodeCnt * hSpacing;
+    for(int i = 0;i <= maxlevel - minlevel;i++){
+        for(int j = 0;j < tree[i].size();j++){
+            int nodeidx = tree[i][j].first;
+            int x = ori.x() + (j + 0.5) * width / tree[i].size(),
+                y = ori.y() + i * vSpacing;
+            nodes[nodeidx] -> setPos(x, y);
+        }
+    }
+    emit updatePainter();
+}
+
+
+void LogicModule::topoLayout(int s){
+    clearVis();
+    int inf = 0x3f3f3f3f;
+    double vSpacing = 100, hSpacing = 100;
+    QQueue <int> q;
+    QVector <int> level(nodes.size() + 5), pre(nodes.size() + 5, -1);
+    int minlevel = 1, maxlevel = -inf;
+    q.push_back(s);
+    level[s] = 1;
+    while(!q.empty()){
+        int u = q.front();
+        q.pop_front();
+        for(auto idx : graph[u]){
+            edge &e = path[idx];
+            if(!vis[e.v]){
+                level[e.v] = level[u] + (e.isAdditional ? -1 : 1);
+                if(e.isAdditional){
+                    pre[u] = e.v;
+                }
+
+                else{
+                    pre[e.v] = u;
+                }
+                minlevel = qMin(minlevel, level[e.v]);
+                maxlevel = qMax(maxlevel, level[e.v]);
+                vis[e.v] = 1;
+                q.push_back(e.v);
+            }
+        }
+    }
+    QVector <QPair<int, int> > tree[maxlevel - minlevel + 2];
+    for(int i = 0;i < nodes.size();i++){
+        if(level[i] != inf){
+            tree[level[i] - minlevel].push_back(qMakePair(i, pre[i]));
+        }
+    }
+    int maxNodeCnt = 0;
+    for(int i = 0;i <= maxlevel - minlevel;i++){
+        std::sort(tree[i].begin(), tree[i].end(), cmp);
+        maxNodeCnt = qMax(maxNodeCnt, (int)tree[i].size());
+    }
+    QPointF ori(nodes[s]->getXPos(), nodes[s]->getYPos());
+    double width = maxNodeCnt * vSpacing;
+    for(int i = 0;i <= maxlevel - minlevel;i++){
+        for(int j = 0;j < tree[i].size();j++){
+            int nodeidx = tree[i][j].first;
+            int y = ori.y() + (j + 0.5) * width / tree[i].size(),
+                x = ori.x() + i * hSpacing;
+            nodes[nodeidx] -> setPos(x, y);
+        }
     }
     emit updatePainter();
 }

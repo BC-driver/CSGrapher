@@ -77,6 +77,12 @@ public:
     void polyLayout(NodeElement* node);
 
 
+    void treeLayout(NodeElement* node);
+
+
+    void topoLayout(NodeElement* node);
+
+
     Element* findHoverOn(QPoint pt);
 
 

@@ -1,13 +1,11 @@
 /*****************************************************************************
 * \file element.h
 * \author Zirui Xu
-* \date 2023/04/16
-* \version v0.5
+* \date 2023/04/17
+* \version v0.6
 * \brief 实现图的抽象化,遍历,排布及其可视化
 * \note Copyright (c) 2020-2030 南京理工大学
-* \remarks 添加Element类的抽象化使其更易于处理
-*          实现BFS,DFS两种搜索方式
-*          实现多边形排布
+* \remarks 添加树形排布与拓扑排序排布
 ******************************************************************************/
 #ifndef LOGICMODULE_H
 #define LOGICMODULE_H
@@ -60,6 +58,12 @@ public:
 
 
     void polyLayout(int s);
+
+
+    void treeLayout(int s);
+
+
+    void topoLayout(int s);
 
 
     QPointF rotateN(QPointF ori, double n);

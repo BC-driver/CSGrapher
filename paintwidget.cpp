@@ -166,6 +166,20 @@ void PaintWidget::polyLayout(NodeElement *node){
 }
 
 
+void PaintWidget::treeLayout(NodeElement *node){
+    int idx = logic -> findNodeIndex(node);
+    if(idx != -1) logic -> treeLayout(idx);
+    logic -> clearVis();
+}
+
+
+void PaintWidget::topoLayout(NodeElement *node){
+    int idx = logic -> findNodeIndex(node);
+    if(idx != -1) logic -> topoLayout(idx);
+    logic -> clearVis();
+}
+
+
 void PaintWidget::initNode(QPoint pt){
     elementList.push_back(new NodeElement(pt.x(), pt.y()));
     elementList.last()->setContext(QString::number(elementList.length()));

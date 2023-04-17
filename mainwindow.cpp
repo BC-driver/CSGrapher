@@ -526,3 +526,28 @@ void MainWindow::on_polyLayout_pressed()
         ui -> board -> polyLayout((NodeElement*)currentFocusElement);
     }
 }
+
+
+void MainWindow::on_treeLayout_pressed()
+{
+    if(currentFocusElement != Q_NULLPTR && currentFocusElement -> getType() == NODE){
+        ui -> board -> treeLayout((NodeElement*)currentFocusElement);
+    }
+}
+
+
+void MainWindow::on_topoLayout_pressed()
+{
+    if(currentFocusElement != Q_NULLPTR && currentFocusElement -> getType() == NODE){
+        ui -> board -> topoLayout((NodeElement*)currentFocusElement);
+    }
+}
+
+
+void MainWindow::on_generateButton_pressed()
+{
+//    QString text = ui -> quickInputTextEdit -> toPlainText();
+//    QByteArray btarray;
+//    QDataStream input(&btarray, QIODevice::WriteOnly);
+//    input << text;
+}

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1247</width>
-    <height>759</height>
+    <width>1113</width>
+    <height>752</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1102,6 +1102,19 @@ border-color: rgb(0, 0, 0);</string>
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QPushButton" name="generateButton">
+            <property name="font">
+             <font>
+              <family>等线</family>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>生成图</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -1115,7 +1128,7 @@ border-color: rgb(0, 0, 0);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1247</width>
+     <width>1113</width>
      <height>26</height>
     </rect>
    </property>

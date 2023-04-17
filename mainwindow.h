@@ -136,8 +136,21 @@ private slots:
 
 
     void on_dfsButton_pressed();
+
+
     void on_bfsButton_pressed();
+
+
     void on_polyLayout_pressed();
+
+
+    void on_treeLayout_pressed();
+
+
+    void on_topoLayout_pressed();
+
+
+    void on_generateButton_pressed();
 };
 
 
