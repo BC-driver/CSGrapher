@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QTextStream>
 #include <QDebug>
+#include <QShortcut>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -13,6 +14,14 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    QShortcut  *newFileShortcut= new QShortcut(QKeySequence("ctrl+N"), this),
+               *openFileShortcut = new QShortcut(QKeySequence("ctrl+O"), this),
+               *renderImageShortcut= new QShortcut(QKeySequence("ctrl+I"), this),
+               *saveFileShortcut= new QShortcut(QKeySequence("ctrl+S"), this);
+    connect(newFileShortcut, SIGNAL(activated()), this,SLOT(on_newGraphAction_triggered()));
+    //connect(openFileShortcut, SIGNAL(activated()), this,SLOT(MainWindow::on_newGraphAction_triggered()));
+    connect(renderImageShortcut, SIGNAL(activated()), this,SLOT(renderImageActionSlot()));
+    connect(saveFileShortcut, SIGNAL(activated()), this,SLOT(on_newGraphAction_triggered()));
     connect(ui -> board, &PaintWidget::showDefaultInfoSignal, this, &MainWindow::displayDefaultInfo);
     connect(ui -> board, &PaintWidget::showElementInfoSignal, this, &MainWindow::displayElementInfo);
     connect(ui -> renderImageAction, &QAction::triggered, this, &MainWindow::renderImageActionSlot);
@@ -21,16 +30,11 @@ MainWindow::MainWindow(QWidget *parent)
     idelColor = "(255, 255, 255)";
     activeColor = "(240, 240, 240)";
 
-//    ui -> cursorSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
-//    ui -> stackSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
-//    ui -> queueSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
-//    ui -> graphSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
-//    ui -> arrowSetButton -> setStyleSheet("background-color: rgb(255, 255, 255)");
-
     this -> setWindowTitle("CSGraph");
     this -> displayDefaultInfo();
 
     ui -> board -> setMouseTracking(true);
+    ui -> board -> setVisible(0);
 
     currentFocusElement = Q_NULLPTR;
     currentButton = ui -> cursorSetButton;
@@ -105,46 +109,96 @@ void MainWindow::on_arrowSetButton_clicked()
 
 
 void MainWindow::renderImageActionSlot(){
-    filePath = QFileDialog::getSaveFileName(this, "Save",
-                                 "C:\\",
-                                 "image(*.png)");
-    if(filePath.isEmpty()){
-        QMessageBox::warning(this, "Waring", "Please choose a vaild file path");
+    if(filePath == ""){
+        QMessageBox::warning(this, "警告", "目前没有打开的画板");
+        return;
     }
-    else{
-        QFile file(filePath);
-        if(file.exists()){
-            QMessageBox::warning(this, "Waring", "This name has been used");
-        }
-        else{
-            QPixmap pixmap = QPixmap::grabWidget(ui -> board);
-            pixmap.save(filePath);
-        }
+    QString imagePath = QFileDialog::getSaveFileName(this, "渲染为","C:\\","image(*.png)");
+    if(imagePath.isEmpty()){
+        QMessageBox::warning(this, "警告", "请选择一个合法路径");
+        return;
     }
-
+    QFile file(imagePath);
+    if(file.exists()){
+        QMessageBox::warning(this, "警告", "此文件名已存在");
+        return;
+    }
+    QPixmap pixmap = QPixmap::grabWidget(ui -> board);
+    pixmap.save(imagePath);
 }
 
 
-void MainWindow::updateGraphDataText(){
+void MainWindow::on_newGraphAction_triggered()
+{
+    filePath = QFileDialog::getSaveFileName(this, "新建","C:\\","graph(*.txt)");
+    if(filePath.isEmpty()){
+        QMessageBox::warning(this, "警告", "请选择一个合法路径");
+        filePath = "";
+        return;
+    }
     QFile file(filePath);
-    file.open(QIODevice::ReadOnly);
-    QByteArray arr = file.readAll();
-    ui -> quickInputTextEdit -> setText(arr);
+    if(file.exists()){
+        QMessageBox::warning(this, "警告", "此文件名已存在");
+        filePath = "";
+        return;
+    }
+    file.open(QIODevice::ReadWrite | QIODevice::Text);
+    QTextStream input(&file);
+    input << "OK";
+    QFileInfo fileInfo(file);
+    this -> setWindowTitle(fileInfo.fileName() + " - CSGraph");
+    ui -> board -> setVisible(1);
+    ui -> openFileHintWidget -> setVisible(0);
+    file.close();
 }
 
 
 void MainWindow::on_openGraphAction_triggered(){
-    filePath = QFileDialog::getOpenFileName(this, "Open",
-                                 "C:\\",
-                                 "text(*.txt)");
+    filePath = QFileDialog::getSaveFileName(this, "打开","C:\\","graph(*.txt)");
     if(filePath.isEmpty()){
-        QMessageBox::warning(this, "Waring", "Please choose a vaild file path");
+        QMessageBox::warning(this, "警告", "请选择一个合法路径");
+        filePath = "";
+        return;
     }
-    else{
-        ui -> board -> setFilePath(filePath);
-        ui -> board -> initGraph();
-        updateGraphDataText();
+    QFile file(filePath);
+    if(file.exists()){
+        QMessageBox::warning(this, "警告", "此文件名已存在");
+        filePath = "";
+        return;
     }
+    file.open(QIODevice::ReadWrite | QIODevice::Text);
+    QTextStream input(&file);
+    QString type;
+    input >> type;
+    while(type != "OK"){
+        input >> type;
+    }
+    QFileInfo fileInfo(file);
+    this -> setWindowTitle(fileInfo.fileName() + " - CSGraph");
+    ui -> board -> setVisible(1);
+    ui -> openFileHintWidget -> setVisible(0);
+    file.close();//TODO
+}
+
+
+
+void MainWindow::on_saveGraphAction_triggered(){
+    filePath = QFileDialog::getSaveFileName(this, "另存为","C:\\","graph(*.txt)");
+    if(filePath.isEmpty()){
+        QMessageBox::warning(this, "警告", "请选择一个合法路径");
+        filePath = "";
+        return;
+    }
+    QFile file(filePath);
+    if(file.exists()){
+        QMessageBox::warning(this, "警告", "此文件名已存在");
+        filePath = "";
+        return;
+    }
+    file.open(QIODevice::ReadWrite | QIODevice::Text);
+    QTextStream input(&file);
+    ui -> board -> saveFile(input);
+    file.close();
 }
 
 
@@ -179,6 +233,10 @@ void MainWindow::displayDefaultInfo(){
     ui -> polyLayout -> setVisible(0);
     ui -> topoLayout -> setVisible(0);
     ui -> treeLayout -> setVisible(0);
+    ui -> newBlockTag -> setVisible(0);
+    ui -> newBlockButton -> setVisible(0);
+    ui -> newBlockNameTag -> setVisible(0);
+    ui -> newBlockLineedit -> setVisible(0);
 }
 
 
@@ -224,6 +282,10 @@ void MainWindow::displayElementInfo(Element *eptr){
         ui -> specialAttributeTwoLineedit -> setText(QString::number(sptr -> getBlockHeight()));
         ui -> specialAttributeOneLineedit -> setVisible(1);
         ui -> specialAttributeTwoLineedit -> setVisible(1);
+        ui -> newBlockTag -> setVisible(1);
+        ui -> newBlockButton -> setVisible(1);
+        ui -> newBlockNameTag -> setVisible(1);
+        ui -> newBlockLineedit -> setVisible(1);
         break;
 
         case QUEUE:
@@ -236,6 +298,10 @@ void MainWindow::displayElementInfo(Element *eptr){
         ui -> specialAttributeTwoLineedit -> setText(QString::number(qptr -> getBlockHeight()));
         ui -> specialAttributeOneLineedit -> setVisible(1);
         ui -> specialAttributeTwoLineedit -> setVisible(1);
+        ui -> newBlockTag -> setVisible(1);
+        ui -> newBlockButton -> setVisible(1);
+        ui -> newBlockNameTag -> setVisible(1);
+        ui -> newBlockLineedit -> setVisible(1);
         break;
 
         case BLOCK:
@@ -331,6 +397,7 @@ void MainWindow::on_rLineColorLineEdit_returnPressed()
     update();
 }
 
+
 void MainWindow::on_gLineColorLineEdit_returnPressed(){
     int changeValue = ui -> gLineColorLineEdit -> text().toInt();
     QColor changeColor;
@@ -351,6 +418,7 @@ void MainWindow::on_gLineColorLineEdit_returnPressed(){
     update();
 }
 
+
 void MainWindow::on_bLineColorLineEdit_returnPressed(){
     int changeValue = ui -> bLineColorLineEdit -> text().toInt();
     QColor changeColor;
@@ -370,7 +438,6 @@ void MainWindow::on_bLineColorLineEdit_returnPressed(){
                                                   + QString::number(changeColor.blue()) + ");");
     update();
 }
-
 
 
 void MainWindow::on_rFontColorLineEdit_returnPressed()
@@ -416,6 +483,7 @@ void MainWindow::on_gFontColorLineEdit_returnPressed()
     update();
 }
 
+
 void MainWindow::on_bFontColorLineEdit_returnPressed()
 {
     int changeValue = ui -> bFontColorLineEdit -> text().toInt();
@@ -437,6 +505,7 @@ void MainWindow::on_bFontColorLineEdit_returnPressed()
     update();
 }
 
+
 void MainWindow::on_elementContextLineEdit_returnPressed()
 {
     QString changeContext = ui -> elementContextLineEdit -> text();
@@ -446,7 +515,6 @@ void MainWindow::on_elementContextLineEdit_returnPressed()
     }
     update();
 }
-
 
 
 void MainWindow::on_specialAttributeOneLineedit_returnPressed()
@@ -488,6 +556,38 @@ void MainWindow::on_specialAttributeTwoLineedit_returnPressed()
 }
 
 
+void MainWindow::on_newBlockButton_pressed()
+{
+    QString value = ui -> newBlockLineedit -> text();
+    elementType type = currentFocusElement -> getType();
+    if(type == STACK){
+        StackElement* ptr = (StackElement*) currentFocusElement;
+        ptr -> newBlock(value);
+    }
+
+    else if(type == QUEUE){
+        QueueElement* ptr = (QueueElement*) currentFocusElement;
+        ptr -> newBlock(value);
+    }
+    update();
+}
+
+
+void MainWindow::on_popBlockButton_pressed(){
+    elementType type = currentFocusElement -> getType();
+    if(type == STACK){
+        StackElement* ptr = (StackElement*) currentFocusElement;
+        ptr -> popBlock();
+    }
+
+    else if(type == QUEUE){
+        QueueElement* ptr = (QueueElement*) currentFocusElement;
+        ptr -> popBlock();
+    }
+    update();
+}
+
+
 void MainWindow::on_directCheckBox_stateChanged(int arg1)
 {
     if(currentFocusElement -> getType() != ARROW) return;
@@ -511,6 +611,7 @@ void MainWindow::on_dfsButton_pressed()
         ui -> board -> dfsFromNode((NodeElement*)currentFocusElement);
     }
 }
+
 
 void MainWindow::on_bfsButton_pressed()
 {
@@ -544,10 +645,63 @@ void MainWindow::on_topoLayout_pressed()
 }
 
 
+class DSU{
+
+
+public:
+
+
+    DSU(int n){
+        for(int i = 0;i <= n;i++){
+            father.push_back(i);
+        }
+    }
+
+
+    int findFather(int x){
+        return father[x] == x ? x : findFather(father[x]);
+    }
+
+
+    void unionset(int x, int y){
+        int fax = findFather(x), fay = findFather(y);
+        if(fax == fay) return;
+        else father[fay] = fax;
+    }
+
+
+private:
+
+
+    QVector <int> father;
+
+
+};
+
+
 void MainWindow::on_generateButton_pressed()
 {
-//    QString text = ui -> quickInputTextEdit -> toPlainText();
-//    QByteArray btarray;
-//    QDataStream input(&btarray, QIODevice::WriteOnly);
-//    input << text;
+    QString text = ui -> quickInputTextEdit -> toPlainText();
+    QTextStream input(&text);
+    QVector <NodeElement*> nodes;
+    int n, m;
+    input >> n >> m;
+    DSU dsu(n);
+    for(int i = 1;i <= n;i++){
+        NodeElement* curNode = (NodeElement*)ui -> board -> initNode(QPoint(50 + i * 100, 50));
+        nodes.push_back(curNode);
+    }
+    for(int i = 1;i <= m;i++){
+        int u, v;
+        input >> u >> v;
+        dsu.unionset(u, v);
+        ui -> board -> initArrow((NodeElement*)nodes[u - 1], (NodeElement*)nodes[v - 1]);
+    }
+    ui -> board -> updateLogic();
+    for(int i = 0;i < nodes.size();i++){
+        if(dsu.findFather(i) == i){
+            ui -> board -> polyLayout(nodes[i]);
+        }
+    }
 }
+

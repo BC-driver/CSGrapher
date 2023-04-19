@@ -292,6 +292,21 @@ void StackElement::setBlockHeight(int blockHeight){
 }
 
 
+void StackElement::newBlock(QString context){
+    BlockElement* bptr = new BlockElement(0, 0);
+    bptr -> setContext(context);
+    this -> blocks.push_back(bptr);
+    this -> size = blocks.size();
+}
+
+
+void StackElement::popBlock(){
+    if(blocks.empty()) return;
+    blocks.pop_back();
+    size = blocks.size();
+}
+
+
 int StackElement::getBlockWidth(){
     return this -> blockWidth;
 }
@@ -299,6 +314,14 @@ int StackElement::getBlockWidth(){
 
 int StackElement::getBlockHeight(){
     return this -> blockHeight;
+}
+
+
+BlockElement* StackElement::getBlockAt(int i){
+    if(i < size){
+        return blocks[i];
+    }
+    return Q_NULLPTR;
 }
 
 
@@ -328,7 +351,7 @@ void StackElement::paint(QPainter *painter){
         BlockElement* b = blocks[i];
         b -> setBlockWidth(this -> blockWidth);
         b -> setBlockHeight(this -> blockHeight);
-        b -> setPos(getXPos(), getYPos() + blockHeight * (i + 1));
+        b -> setPos(getXPos(), getYPos() + blockHeight * (size - i));
         b -> paint(painter);
     }
 
@@ -388,6 +411,21 @@ void QueueElement::setBlockHeight(int blockHeight){
 }
 
 
+void QueueElement::newBlock(QString context){
+    BlockElement* bptr = new BlockElement(0, 0);
+    bptr -> setContext(context);
+    this -> blocks.push_back(bptr);
+    this -> size = blocks.size();
+}
+
+
+void QueueElement::popBlock(){
+    if(blocks.empty()) return;
+    blocks.pop_front();
+    size = blocks.size();
+}
+
+
 int QueueElement::getBlockWidth(){
     return this -> blockWidth;
 }
@@ -395,6 +433,14 @@ int QueueElement::getBlockWidth(){
 
 int QueueElement::getBlockHeight(){
     return this -> blockHeight;
+}
+
+
+BlockElement* QueueElement::getBlockAt(int i){
+    if(i < size){
+        return blocks[i];
+    }
+    return Q_NULLPTR;
 }
 
 

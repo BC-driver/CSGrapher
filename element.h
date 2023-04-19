@@ -1,11 +1,11 @@
 /*****************************************************************************
 * \file element.h
 * \author Zirui Xu
-* \date 2023/04/16
-* \version v0.5
+* \date 2023/04/19
+* \version v0.7
 * \brief 定义了绘图的各类基本元素
 * \note Copyright (c) 2020-2030 南京理工大学
-* \remarks
+* \remarks 为StackElement,QueueElement添加了若干方法完善程序
 ******************************************************************************/
 #ifndef ELEMENT_H
 #define ELEMENT_H
@@ -236,10 +236,19 @@ public:
     void setBlockHeight(int blockHeight);
 
 
+    void newBlock(QString context);
+
+
+    void popBlock();
+
+
     int getBlockWidth();
 
 
     int getBlockHeight();
+
+
+    BlockElement* getBlockAt(int i);
 
 
     void paint(QPainter* painter);
@@ -276,10 +285,19 @@ public:
     void setBlockHeight(int blockHeight);
 
 
+    void newBlock(QString context);
+
+
+    void popBlock();
+
+
     int getBlockWidth();
 
 
     int getBlockHeight();
+
+
+    BlockElement* getBlockAt(int i);
 
 
     void paint(QPainter* painter);

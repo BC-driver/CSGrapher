@@ -1,17 +1,18 @@
 /*****************************************************************************
 * \file paintwidget.h
 * \author Zirui Xu
-* \date 2023/04/16
-* \version v0.5
+* \date 2023/04/19
+* \version v0.7
 * \brief 定义了自定义画板控件
 * \note Copyright (c) 2020-2030 南京理工大学
-* \remarks
+* \remarks 添加了保存画板功能(未完成)
 ******************************************************************************/
 #ifndef PAINTWIDGET_H
 #define PAINTWIDGET_H
 
 #include <QWidget>
 #include <QMouseEvent>
+#include <QTextStream>
 #include "element.h"
 #include "logicmodule.h"
 
@@ -50,16 +51,16 @@ public:
     void initGraph();
 
 
-    void initNode(QPoint pt);
+    Element* initNode(QPoint pt);
 
 
-    void initStack(QPoint pt, int size, QString *list);
+    Element* initStack(QPoint pt, int size, QString *list);
 
 
-    void initQueue(QPoint pt, int size, QString *list);
+    Element* initQueue(QPoint pt, int size, QString *list);
 
 
-    void initArrow(NodeElement *from, NodeElement *to);
+    Element* initArrow(NodeElement *from, NodeElement *to);
 
 
     void updateGraphFile();
@@ -96,6 +97,9 @@ public:
 
 
     Element* getCurrentHighlightElement();
+
+
+    void saveFile(QTextStream& in);
 
 
 protected:

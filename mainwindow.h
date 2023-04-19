@@ -1,11 +1,11 @@
 /*****************************************************************************
 * \file mainwindow.h
 * \author Zirui Xu
-* \date 2023/04/04
-* \version v0.5
+* \date 2023/04/19
+* \version v0.7
 * \brief 定义了整个窗体上的各类控件
 * \note Copyright (c) 2020-2030 南京理工大学
-* \remarks 添加遍历演示按钮与排布功能按钮
+* \remarks 添加了文件系统(未完成)
 ******************************************************************************/
 
 #ifndef MAINWINDOW_H
@@ -84,9 +84,6 @@ private slots:
     void on_queueSetButton_clicked();
 
 
-    void updateGraphDataText();
-
-
     void on_openGraphAction_triggered();
 
 
@@ -151,6 +148,16 @@ private slots:
 
 
     void on_generateButton_pressed();
+
+
+    void on_newGraphAction_triggered();
+
+
+    void on_saveGraphAction_triggered();
+
+
+    void on_newBlockButton_pressed();
+    void on_popBlockButton_pressed();
 };
 
 

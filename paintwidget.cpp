@@ -162,6 +162,7 @@ void PaintWidget::bfsFromNode(NodeElement *node){
 void PaintWidget::polyLayout(NodeElement *node){
     int idx = logic -> findNodeIndex(node);
     if(idx != -1) logic -> polyLayout(idx);
+    else qDebug() << "NO!";
     logic -> clearVis();
 }
 
@@ -180,26 +181,30 @@ void PaintWidget::topoLayout(NodeElement *node){
 }
 
 
-void PaintWidget::initNode(QPoint pt){
+Element* PaintWidget::initNode(QPoint pt){
     elementList.push_back(new NodeElement(pt.x(), pt.y()));
     elementList.last()->setContext(QString::number(elementList.length()));
+    return elementList.last();
 }
 
 
-void PaintWidget::initQueue(QPoint pt, int size, QString *list){
+Element* PaintWidget::initQueue(QPoint pt, int size, QString *list){
     elementList.push_back(new QueueElement(pt.x(), pt.y(), size, list));
     elementList.last()->setContext(QString::number(elementList.length()));
+    return elementList.last();
 }
 
 
-void PaintWidget::initStack(QPoint pt, int size, QString *list){
+Element* PaintWidget::initStack(QPoint pt, int size, QString *list){
     elementList.push_back(new StackElement(pt.x(), pt.y(), size, list));
     elementList.last()->setContext(QString::number(elementList.length()));
+    return elementList.last();
 }
 
 
-void PaintWidget::initArrow(NodeElement *from, NodeElement *to){
+Element* PaintWidget::initArrow(NodeElement *from, NodeElement *to){
     elementList.push_back(new ArrowElement(from, to));
+    return elementList.last();
 }
 
 
@@ -244,4 +249,62 @@ void PaintWidget::showElementInfo(Element *eptr){
 
 Element* PaintWidget::getCurrentHighlightElement(){
     return currentHighlightElement;
+}
+
+
+void PaintWidget::saveFile(QTextStream& in){
+    QVector <NodeElement*> nodes;
+    QVector <ArrowElement*> arrows;
+    QVector <StackElement*> stacks;
+    QVector <QueueElement*> queues;
+    for(auto eptr : elementList){
+        switch(eptr -> getType()){
+        case NODE:
+            nodes.push_back((NodeElement*)eptr);
+            break;
+        case ARROW:
+            arrows.push_back((ArrowElement*)eptr);
+            break;
+        case QUEUE:
+            queues.push_back((QueueElement*)eptr);
+            break;
+        case STACK:
+            stacks.push_back((StackElement*)eptr);
+        default:
+            break;
+        }
+    }
+    in << "NODE\n";
+    for(int i = 0;i < nodes.size();i++){
+        NodeElement* ptr = nodes[i];
+        in << i << " ";
+        in << ptr -> getXPos() << " " << ptr -> getYPos() << " ";
+        in << ptr -> getRadius() << " ";
+        in << ptr -> getFontSize() << " " << ptr -> getContext() << " ";
+        in << ptr -> getEdgeColor().red() << " " << ptr -> getEdgeColor().green() << " " << ptr -> getEdgeColor().blue() << " ";
+        in << ptr -> getFontColor().red() << " " << ptr -> getFontColor().green() << " " << ptr -> getFontColor().blue() << " ";
+        in << "\n";
+    }
+    for(int i = 0;i < arrows.size();i++){
+        ArrowElement* ptr = arrows[i];
+        int u = -1, v = -1;
+        for(int j = 0;j < nodes.size();j++){
+            if(nodes[j] == ptr -> getFromElement()) u = j;
+            else if(nodes[j] == ptr -> getToElement()) v = j;
+        }
+        in << i << " " << u << " " << v << " ";
+        in << ptr -> getFontSize() << ptr -> getContext() << " ";
+        in << ptr -> getEdgeColor().red() << " " << ptr -> getEdgeColor().green() << " " << ptr -> getEdgeColor().blue() << " ";
+        in << ptr -> getFontColor().red() << " " << ptr -> getFontColor().green() << " " << ptr -> getFontColor().blue() << " ";
+        in << "\n";
+    }
+    for(int i = 0;i < stacks.size();i++){
+        StackElement* ptr = stacks[i];
+        //TODO
+        in << ptr -> getFontSize() << ptr -> getContext() << " ";
+        in << ptr -> getEdgeColor().red() << " " << ptr -> getEdgeColor().green() << " " << ptr -> getEdgeColor().blue() << " ";
+        in << ptr -> getFontColor().red() << " " << ptr -> getFontColor().green() << " " << ptr -> getFontColor().blue() << " ";
+        in << "\n";
+    }
+
 }
