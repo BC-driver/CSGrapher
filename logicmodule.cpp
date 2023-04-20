@@ -197,7 +197,7 @@ void LogicModule::treeLayout(int s){
     int inf = 0x3f3f3f3f;
     double vSpacing = 100, hSpacing = 100;
     QQueue <int> q;
-    QVector <int> level(nodes.size() + 5), pre(nodes.size() + 5, -1);
+    QVector <int> level(nodes.size() + 5, inf), pre(nodes.size() + 5, -1);
     int minlevel = 1, maxlevel = -inf;
     q.push_back(s);
     level[s] = 1;
@@ -223,6 +223,9 @@ void LogicModule::treeLayout(int s){
         }
     }
     QVector <QPair<int, int> > tree[maxlevel - minlevel + 2];
+//    for(int i = 0;i < nodes.size();i++){
+//        qDebug() << level[i] << " " << nodes[i] -> getContext();
+//    }
     for(int i = 0;i < nodes.size();i++){
         if(level[i] != inf){
             tree[level[i] - minlevel].push_back(qMakePair(i, pre[i]));
@@ -252,7 +255,7 @@ void LogicModule::topoLayout(int s){
     int inf = 0x3f3f3f3f;
     double vSpacing = 100, hSpacing = 100;
     QQueue <int> q;
-    QVector <int> level(nodes.size() + 5), pre(nodes.size() + 5, -1);
+    QVector <int> level(nodes.size() + 5, inf), pre(nodes.size() + 5, -1);
     int minlevel = 1, maxlevel = -inf;
     q.push_back(s);
     level[s] = 1;

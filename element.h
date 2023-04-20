@@ -1,11 +1,11 @@
 /*****************************************************************************
 * \file element.h
 * \author Zirui Xu
-* \date 2023/04/19
-* \version v0.7
+* \date 2023/04/20
+* \version v1.0
 * \brief 定义了绘图的各类基本元素
 * \note Copyright (c) 2020-2030 南京理工大学
-* \remarks 为StackElement,QueueElement添加了若干方法完善程序
+* \remarks 添加了newBlock的重载函数, 使其用法更灵活
 ******************************************************************************/
 #ifndef ELEMENT_H
 #define ELEMENT_H
@@ -239,6 +239,9 @@ public:
     void newBlock(QString context);
 
 
+    void newBlock(QString context, QColor fontColor, QColor edgeColor, int fontSize, int lineWidth);
+
+
     void popBlock();
 
 
@@ -246,6 +249,9 @@ public:
 
 
     int getBlockHeight();
+
+
+    int getSize();
 
 
     BlockElement* getBlockAt(int i);
@@ -288,6 +294,9 @@ public:
     void newBlock(QString context);
 
 
+    void newBlock(QString context, QColor fontColor, QColor edgeColor, int fontSize, int lineWidth);
+
+
     void popBlock();
 
 
@@ -295,6 +304,9 @@ public:
 
 
     int getBlockHeight();
+
+
+    int getSize();
 
 
     BlockElement* getBlockAt(int i);

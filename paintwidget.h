@@ -5,7 +5,7 @@
 * \version v0.7
 * \brief 定义了自定义画板控件
 * \note Copyright (c) 2020-2030 南京理工大学
-* \remarks 添加了保存画板功能(未完成)
+* \remarks 完成保存,打开画板功能
 ******************************************************************************/
 #ifndef PAINTWIDGET_H
 #define PAINTWIDGET_H
@@ -100,6 +100,12 @@ public:
 
 
     void saveFile(QTextStream& in);
+
+
+    void openFile(QTextStream& in);
+
+
+    void clearElementList();
 
 
 protected:

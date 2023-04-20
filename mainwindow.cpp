@@ -19,9 +19,9 @@ MainWindow::MainWindow(QWidget *parent)
                *renderImageShortcut= new QShortcut(QKeySequence("ctrl+I"), this),
                *saveFileShortcut= new QShortcut(QKeySequence("ctrl+S"), this);
     connect(newFileShortcut, SIGNAL(activated()), this,SLOT(on_newGraphAction_triggered()));
-    //connect(openFileShortcut, SIGNAL(activated()), this,SLOT(MainWindow::on_newGraphAction_triggered()));
+    connect(openFileShortcut, SIGNAL(activated()), this,SLOT(on_openGraphAction_triggered()));
     connect(renderImageShortcut, SIGNAL(activated()), this,SLOT(renderImageActionSlot()));
-    connect(saveFileShortcut, SIGNAL(activated()), this,SLOT(on_newGraphAction_triggered()));
+    connect(saveFileShortcut, SIGNAL(activated()), this,SLOT(on_saveGraphAction_triggered()));
     connect(ui -> board, &PaintWidget::showDefaultInfoSignal, this, &MainWindow::displayDefaultInfo);
     connect(ui -> board, &PaintWidget::showElementInfoSignal, this, &MainWindow::displayElementInfo);
     connect(ui -> renderImageAction, &QAction::triggered, this, &MainWindow::renderImageActionSlot);
@@ -65,46 +65,31 @@ QString MainWindow::getActiveColor(){
 
 void MainWindow::on_cursorSetButton_clicked()
 {
-    // this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
     ui -> board -> setElement(CURSOR);
-    // setCurrentButton(ui -> cursorSetButton);
-    // this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
 }
 
 
 void MainWindow::on_graphSetButton_clicked()
 {
-    // this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
     ui -> board -> setElement(NODE);
-    // setCurrentButton(ui -> graphSetButton);
-    // this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
 }
 
 
 void MainWindow::on_stackSetButton_clicked()
 {
-    // this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
     ui -> board -> setElement(STACK);
-    // setCurrentButton(ui -> stackSetButton);
-    // this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
 }
 
 
 void MainWindow::on_queueSetButton_clicked()
 {
-    // this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
     ui -> board -> setElement(QUEUE);
-    // setCurrentButton(ui -> queueSetButton);
-    // this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
 }
 
 
 void MainWindow::on_arrowSetButton_clicked()
 {
-    // this -> currentButton -> setStyleSheet("background-color: rgb" + getIdelColor() + ";");
     ui -> board -> setElement(ARROW);
-    // setCurrentButton(ui -> arrowSetButton);
-    // this -> currentButton -> setStyleSheet("background-color: rgb" + getActiveColor() + ";");
 }
 
 
@@ -130,7 +115,7 @@ void MainWindow::renderImageActionSlot(){
 
 void MainWindow::on_newGraphAction_triggered()
 {
-    filePath = QFileDialog::getSaveFileName(this, "新建","C:\\","graph(*.txt)");
+    filePath = QFileDialog::getSaveFileName(this, "新建","C:\\","graph(*.grf)");
     if(filePath.isEmpty()){
         QMessageBox::warning(this, "警告", "请选择一个合法路径");
         filePath = "";
@@ -142,6 +127,7 @@ void MainWindow::on_newGraphAction_triggered()
         filePath = "";
         return;
     }
+    ui -> board -> clearElementList();
     file.open(QIODevice::ReadWrite | QIODevice::Text);
     QTextStream input(&file);
     input << "OK";
@@ -154,28 +140,20 @@ void MainWindow::on_newGraphAction_triggered()
 
 
 void MainWindow::on_openGraphAction_triggered(){
-    filePath = QFileDialog::getSaveFileName(this, "打开","C:\\","graph(*.txt)");
-    if(filePath.isEmpty()){
-        QMessageBox::warning(this, "警告", "请选择一个合法路径");
-        filePath = "";
-        return;
-    }
+    filePath = QFileDialog::getOpenFileName(this, "打开","C:\\","graph(*.grf)");
     QFile file(filePath);
-    if(file.exists()){
-        QMessageBox::warning(this, "警告", "此文件名已存在");
+    if(!file.exists()){
+        QMessageBox::warning(this, "警告", "此文件名不存在");
         filePath = "";
         return;
     }
-    file.open(QIODevice::ReadWrite | QIODevice::Text);
+    ui -> board -> setVisible(1);
+    ui -> board -> clearElementList();
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream input(&file);
-    QString type;
-    input >> type;
-    while(type != "OK"){
-        input >> type;
-    }
+    ui -> board -> openFile(input);
     QFileInfo fileInfo(file);
     this -> setWindowTitle(fileInfo.fileName() + " - CSGraph");
-    ui -> board -> setVisible(1);
     ui -> openFileHintWidget -> setVisible(0);
     file.close();//TODO
 }
@@ -183,18 +161,11 @@ void MainWindow::on_openGraphAction_triggered(){
 
 
 void MainWindow::on_saveGraphAction_triggered(){
-    filePath = QFileDialog::getSaveFileName(this, "另存为","C:\\","graph(*.txt)");
-    if(filePath.isEmpty()){
-        QMessageBox::warning(this, "警告", "请选择一个合法路径");
-        filePath = "";
+    if(filePath == ""){
+        QMessageBox::warning(this, "警告", "目前没有打开的画板");
         return;
     }
     QFile file(filePath);
-    if(file.exists()){
-        QMessageBox::warning(this, "警告", "此文件名已存在");
-        filePath = "";
-        return;
-    }
     file.open(QIODevice::ReadWrite | QIODevice::Text);
     QTextStream input(&file);
     ui -> board -> saveFile(input);
@@ -254,6 +225,10 @@ void MainWindow::displayElementInfo(Element *eptr){
     ui -> polyLayout -> setVisible(0);
     ui -> topoLayout -> setVisible(0);
     ui -> treeLayout -> setVisible(0);
+    ui -> newBlockTag -> setVisible(0);
+    ui -> newBlockButton -> setVisible(0);
+    ui -> newBlockNameTag -> setVisible(0);
+    ui -> newBlockLineedit -> setVisible(0);
     NodeElement* nptr = (NodeElement*) eptr;
     StackElement* sptr = (StackElement*) eptr;
     QueueElement* qptr = (QueueElement*) eptr;
@@ -700,7 +675,7 @@ void MainWindow::on_generateButton_pressed()
     ui -> board -> updateLogic();
     for(int i = 0;i < nodes.size();i++){
         if(dsu.findFather(i) == i){
-            ui -> board -> polyLayout(nodes[i]);
+            ui -> board -> treeLayout(nodes[i]);
         }
     }
 }

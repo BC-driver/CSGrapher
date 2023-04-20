@@ -274,17 +274,17 @@ void PaintWidget::saveFile(QTextStream& in){
             break;
         }
     }
-    in << "NODE\n";
+    in << "NODE\n" << nodes.size() << "\n";
     for(int i = 0;i < nodes.size();i++){
         NodeElement* ptr = nodes[i];
-        in << i << " ";
         in << ptr -> getXPos() << " " << ptr -> getYPos() << " ";
         in << ptr -> getRadius() << " ";
-        in << ptr -> getFontSize() << " " << ptr -> getContext() << " ";
+        in << ptr -> getFontSize() << " " << ptr -> getLineWidth() << " |" << ptr -> getContext() << "| ";
         in << ptr -> getEdgeColor().red() << " " << ptr -> getEdgeColor().green() << " " << ptr -> getEdgeColor().blue() << " ";
         in << ptr -> getFontColor().red() << " " << ptr -> getFontColor().green() << " " << ptr -> getFontColor().blue() << " ";
         in << "\n";
     }
+    in << "ARROW\n" << arrows.size() << "\n";
     for(int i = 0;i < arrows.size();i++){
         ArrowElement* ptr = arrows[i];
         int u = -1, v = -1;
@@ -292,19 +292,152 @@ void PaintWidget::saveFile(QTextStream& in){
             if(nodes[j] == ptr -> getFromElement()) u = j;
             else if(nodes[j] == ptr -> getToElement()) v = j;
         }
-        in << i << " " << u << " " << v << " ";
-        in << ptr -> getFontSize() << ptr -> getContext() << " ";
+        in << u << " " << v << " " << ptr -> getIsDirected()<<" ";
+        in << ptr -> getFontSize() << " " << ptr -> getLineWidth() << " |" << ptr -> getContext() << "| ";
         in << ptr -> getEdgeColor().red() << " " << ptr -> getEdgeColor().green() << " " << ptr -> getEdgeColor().blue() << " ";
         in << ptr -> getFontColor().red() << " " << ptr -> getFontColor().green() << " " << ptr -> getFontColor().blue() << " ";
         in << "\n";
     }
+    in << "STACK\n" << stacks.size() << "\n";
     for(int i = 0;i < stacks.size();i++){
         StackElement* ptr = stacks[i];
-        //TODO
-        in << ptr -> getFontSize() << ptr -> getContext() << " ";
+        in << ptr -> getXPos() << " " << ptr -> getYPos() << " ";
+        in << ptr -> getBlockWidth() << " " << ptr -> getBlockHeight()<< " ";
+        in << ptr -> getFontSize() << " " << ptr -> getLineWidth() << " |" << ptr -> getContext() << "| ";
         in << ptr -> getEdgeColor().red() << " " << ptr -> getEdgeColor().green() << " " << ptr -> getEdgeColor().blue() << " ";
         in << ptr -> getFontColor().red() << " " << ptr -> getFontColor().green() << " " << ptr -> getFontColor().blue() << " ";
         in << "\n";
+        in << ptr -> getSize() << "\n";
+        for(int i = 0;i < ptr -> getSize();i++){
+            BlockElement* bptr = ptr -> getBlockAt(i);
+            in << bptr -> getFontSize() << " " << ptr -> getLineWidth() << " |" << bptr -> getContext() << "| ";
+            in << bptr -> getEdgeColor().red() << " " << bptr -> getEdgeColor().green() << " " << bptr -> getEdgeColor().blue() << " ";
+            in << bptr -> getFontColor().red() << " " << bptr -> getFontColor().green() << " " << bptr -> getFontColor().blue() << " ";
+            in << "\n";
+        }
     }
+    in << "QUEUE\n" << queues.size() << "\n";
+    for(int i = 0;i < queues.size();i++){
+        QueueElement* ptr = queues[i];
+        in << ptr -> getXPos() << " " << ptr -> getYPos() << " ";
+        in << ptr -> getBlockWidth() << " " << ptr -> getBlockHeight()<< " ";
+        in << ptr -> getFontSize() << " " << ptr -> getLineWidth() << " |" << ptr -> getContext() << "| ";
+        in << ptr -> getEdgeColor().red() << " " << ptr -> getEdgeColor().green() << " " << ptr -> getEdgeColor().blue() << " ";
+        in << ptr -> getFontColor().red() << " " << ptr -> getFontColor().green() << " " << ptr -> getFontColor().blue() << " ";
+        in << "\n";
+        in << ptr -> getSize() << "\n";
+        for(int i = 0;i < ptr -> getSize();i++){
+            BlockElement* bptr = ptr -> getBlockAt(i);
+            in << bptr -> getFontSize() << " " << ptr -> getLineWidth() << " |" << bptr -> getContext() << "| ";
+            in << bptr -> getEdgeColor().red() << " " << bptr -> getEdgeColor().green() << " " << bptr -> getEdgeColor().blue() << " ";
+            in << bptr -> getFontColor().red() << " " << bptr -> getFontColor().green() << " " << bptr -> getFontColor().blue() << " ";
+            in << "\n";
+        }
+    }
+    in << "OK";
+}
 
+
+void PaintWidget::openFile(QTextStream &in){
+    QString type;
+    in >> type;
+    while(type != "OK"){
+        int n;
+        in >> n;
+        qDebug() << n <<" "<< type;
+        for(int i = 0;i < n;i++){
+            int x, y, fSize, lSize, fColorR, fColorG, fColorB, lColorR, lColorG, lColorB;
+            if(type == "NODE"){
+                int r;
+                QString preContext, context = "";
+                in >> x >> y >> r;
+                NodeElement* newNode = new NodeElement(x, y, r);
+                in >> fSize >> lSize >> preContext;
+                in >> lColorR >> lColorG >> lColorB;
+                in >> fColorR >> fColorG >> fColorB;
+                for(int i = 1;i < preContext.size() - 1;i++) context += preContext[i];
+                newNode -> setFontSize(fSize);
+                newNode -> setLineWidth(lSize);
+                newNode -> setContext(context);
+                newNode -> setFontColor(QColor(fColorR, fColorG, fColorB));
+                newNode -> setEdgeColor(QColor(lColorR, lColorG, lColorB));
+                elementList.push_back(newNode);
+            }
+
+            else if(type == "ARROW"){
+                int u, v, isDir;
+                QString preContext, context = "";
+                in >> u >> v >> isDir;
+                ArrowElement* newArrow = new ArrowElement((NodeElement*)elementList[u], (NodeElement*)elementList[v], isDir);
+                in >> fSize >> lSize >> preContext;
+                in >> lColorR >> lColorG >> lColorB;
+                in >> fColorR >> fColorG >> fColorB;
+                for(int i = 1;i < preContext.size() - 1;i++) context += preContext[i];
+                newArrow -> setFontSize(fSize);
+                newArrow -> setLineWidth(lSize);
+                newArrow -> setContext(context);
+                newArrow -> setFontColor(QColor(fColorR, fColorG, fColorB));
+                newArrow -> setEdgeColor(QColor(lColorR, lColorG, lColorB));
+                elementList.push_back(newArrow);
+            }
+
+            else if(type == "STACK"){
+                int bWidth, bHeight, s;
+                QString preContext, context = "";
+                in >> x >> y >> bWidth >> bHeight;
+                StackElement* newStack = new StackElement(x, y, 0, nullptr, bWidth, bHeight);
+                in >> fSize >> lSize >> preContext;
+                in >> lColorR >> lColorG >> lColorB;
+                in >> fColorR >> fColorG >> fColorB;
+                for(int i = 1;i < preContext.size() - 1;i++) context += preContext[i];
+                newStack -> setFontSize(fSize);
+                newStack -> setLineWidth(lSize);
+                newStack -> setContext(context);
+                newStack -> setFontColor(QColor(fColorR, fColorG, fColorB));
+                newStack -> setEdgeColor(QColor(lColorR, lColorG, lColorB));
+                in >> s;
+                for(int i = 0;i < s;i++){
+                    in >> fSize >> lSize >> preContext;
+                    in >> lColorR >> lColorG >> lColorB;
+                    in >> fColorR >> fColorG >> fColorB;
+                    context = "";
+                    for(int i = 1;i < preContext.size() - 1;i++) context += preContext[i];
+                    newStack -> newBlock(context, QColor(fColorR, fColorG, fColorB), QColor(lColorR, lColorG, lColorB), fSize, lSize);
+                }
+                elementList.push_back(newStack);
+            }
+
+            else if(type == "QUEUE"){
+                int bWidth, bHeight, s;
+                QString preContext, context = "";
+                in >> x >> y >> bWidth >> bHeight;
+                QueueElement* newQueue = new QueueElement(x, y, 0, nullptr, bWidth, bHeight);
+                in >> fSize >> lSize >> preContext;
+                in >> lColorR >> lColorG >> lColorB;
+                in >> fColorR >> fColorG >> fColorB;
+                for(int i = 1;i < preContext.size() - 1;i++) context += preContext[i];
+                newQueue -> setFontSize(fSize);
+                newQueue -> setLineWidth(lSize);
+                newQueue -> setContext(context);
+                newQueue -> setFontColor(QColor(fColorR, fColorG, fColorB));
+                newQueue -> setEdgeColor(QColor(lColorR, lColorG, lColorB));
+                in >> s;
+                for(int i = 0;i < s;i++){
+                    in >> fSize >> lSize >> preContext;
+                    in >> lColorR >> lColorG >> lColorB;
+                    in >> fColorR >> fColorG >> fColorB;
+                    context = "";
+                    for(int i = 1;i < preContext.size() - 1;i++) context += preContext[i];
+                    newQueue -> newBlock(context, QColor(fColorR, fColorG, fColorB), QColor(lColorR, lColorG, lColorB), fSize, lSize);
+                }
+                elementList.push_back(newQueue);
+            }
+        }
+        in >> type;
+    }
+}
+
+
+void PaintWidget::clearElementList(){
+    elementList.clear();
 }

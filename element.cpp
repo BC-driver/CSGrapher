@@ -300,6 +300,18 @@ void StackElement::newBlock(QString context){
 }
 
 
+void StackElement::newBlock(QString context, QColor fColor, QColor eColor, int fSize, int lWidth){
+    BlockElement* bptr = new BlockElement(0, 0);
+    bptr -> setContext(context);
+    bptr -> setFontSize(fSize);
+    bptr -> setLineWidth(lWidth);
+    bptr -> setEdgeColor(eColor);
+    bptr -> setFontColor(fColor);
+    this -> blocks.push_back(bptr);
+    this -> size = blocks.size();
+}
+
+
 void StackElement::popBlock(){
     if(blocks.empty()) return;
     blocks.pop_back();
@@ -314,6 +326,11 @@ int StackElement::getBlockWidth(){
 
 int StackElement::getBlockHeight(){
     return this -> blockHeight;
+}
+
+
+int StackElement::getSize(){
+    return size;
 }
 
 
@@ -419,6 +436,18 @@ void QueueElement::newBlock(QString context){
 }
 
 
+void QueueElement::newBlock(QString context, QColor fColor, QColor eColor, int fSize, int lWidth){
+    BlockElement* bptr = new BlockElement(0, 0);
+    bptr -> setContext(context);
+    bptr -> setFontSize(fSize);
+    bptr -> setLineWidth(lWidth);
+    bptr -> setEdgeColor(eColor);
+    bptr -> setFontColor(fColor);
+    this -> blocks.push_back(bptr);
+    this -> size = blocks.size();
+}
+
+
 void QueueElement::popBlock(){
     if(blocks.empty()) return;
     blocks.pop_front();
@@ -433,6 +462,11 @@ int QueueElement::getBlockWidth(){
 
 int QueueElement::getBlockHeight(){
     return this -> blockHeight;
+}
+
+
+int QueueElement::getSize(){
+    return size;
 }
 
 
@@ -480,7 +514,7 @@ void QueueElement::paint(QPainter *painter){
     painter -> setPen(getFontColor());
     painter -> setFont(font);
     painter -> drawText(this -> xPos + this -> blockWidth * (-0.5), this -> yPos + this -> blockHeight * 0.5,
-                        this -> blockWidth, this -> blockHeight,
+                        this -> blockWidth * this -> size, this -> blockHeight,
                         Qt::AlignHCenter | Qt::AlignVCenter, getContext());
 
 
