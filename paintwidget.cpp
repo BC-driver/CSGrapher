@@ -40,7 +40,7 @@ void PaintWidget::paintEvent(QPaintEvent *event){
 void PaintWidget::mousePressEvent(QMouseEvent *event){
     if(event -> button() == Qt::LeftButton){
         QPoint mousePos = event -> pos();
-        QString temp[2] = {"1", "2"};
+        QString temp[1] = {"1"};
         Element* hoveringElement = findHoverOn(mousePos);
         bool noCollide = hoveringElement == Q_NULLPTR;
         switch(currentDrawingElement){
@@ -49,11 +49,11 @@ void PaintWidget::mousePressEvent(QMouseEvent *event){
             break;
 
             case STACK:
-            if(noCollide) initStack(mousePos, 2, temp);
+            if(noCollide) initStack(mousePos, 1, temp);
             break;
 
             case QUEUE:
-            if(noCollide) initQueue(mousePos, 2, temp);
+            if(noCollide) initQueue(mousePos, 1, temp);
             break;
 
             case ARROW:
@@ -106,6 +106,7 @@ void PaintWidget::mousePressEvent(QMouseEvent *event){
             }
         }
     }
+    emit modified();
 }
 
 
@@ -162,7 +163,6 @@ void PaintWidget::bfsFromNode(NodeElement *node){
 void PaintWidget::polyLayout(NodeElement *node){
     int idx = logic -> findNodeIndex(node);
     if(idx != -1) logic -> polyLayout(idx);
-    else qDebug() << "NO!";
     logic -> clearVis();
 }
 
@@ -344,7 +344,6 @@ void PaintWidget::openFile(QTextStream &in){
     while(type != "OK"){
         int n;
         in >> n;
-        qDebug() << n <<" "<< type;
         for(int i = 0;i < n;i++){
             int x, y, fSize, lSize, fColorR, fColorG, fColorB, lColorR, lColorG, lColorB;
             if(type == "NODE"){

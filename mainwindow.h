@@ -39,13 +39,10 @@ public:
     void setCurrentButton(QPushButton *button);
 
 
-    QString getIdelColor();
-
-
-    QString getActiveColor();
-
-
     void updateGraphFile();
+
+
+    void setDrawingButtonEnable(bool state);
 
 
 private:
@@ -91,6 +88,9 @@ private slots:
 
 
     void displayElementInfo(Element* eptr);
+
+
+    void displayUnsave();
 
 
     void on_lineWidthlineEdit_returnPressed();
@@ -157,7 +157,11 @@ private slots:
 
 
     void on_newBlockButton_pressed();
+
+
     void on_popBlockButton_pressed();
+
+
 };
 
 

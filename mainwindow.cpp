@@ -22,19 +22,17 @@ MainWindow::MainWindow(QWidget *parent)
     connect(openFileShortcut, SIGNAL(activated()), this,SLOT(on_openGraphAction_triggered()));
     connect(renderImageShortcut, SIGNAL(activated()), this,SLOT(renderImageActionSlot()));
     connect(saveFileShortcut, SIGNAL(activated()), this,SLOT(on_saveGraphAction_triggered()));
+    connect(ui -> board, &PaintWidget::modified, this, &MainWindow::displayUnsave);
     connect(ui -> board, &PaintWidget::showDefaultInfoSignal, this, &MainWindow::displayDefaultInfo);
     connect(ui -> board, &PaintWidget::showElementInfoSignal, this, &MainWindow::displayElementInfo);
     connect(ui -> renderImageAction, &QAction::triggered, this, &MainWindow::renderImageActionSlot);
-
-
-    idelColor = "(255, 255, 255)";
-    activeColor = "(240, 240, 240)";
 
     this -> setWindowTitle("CSGraph");
     this -> displayDefaultInfo();
 
     ui -> board -> setMouseTracking(true);
     ui -> board -> setVisible(0);
+    setDrawingButtonEnable(false);
 
     currentFocusElement = Q_NULLPTR;
     currentButton = ui -> cursorSetButton;
@@ -50,16 +48,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::setCurrentButton(QPushButton *button){
     this -> currentButton = button;
-}
-
-
-QString MainWindow::getIdelColor(){
-    return idelColor;
-}
-
-
-QString MainWindow::getActiveColor(){
-    return activeColor;
 }
 
 
@@ -136,6 +124,7 @@ void MainWindow::on_newGraphAction_triggered()
     ui -> board -> setVisible(1);
     ui -> openFileHintWidget -> setVisible(0);
     file.close();
+    setDrawingButtonEnable(true);
 }
 
 
@@ -155,9 +144,9 @@ void MainWindow::on_openGraphAction_triggered(){
     QFileInfo fileInfo(file);
     this -> setWindowTitle(fileInfo.fileName() + " - CSGraph");
     ui -> openFileHintWidget -> setVisible(0);
-    file.close();//TODO
+    file.close();
+    setDrawingButtonEnable(true);
 }
-
 
 
 void MainWindow::on_saveGraphAction_triggered(){
@@ -170,6 +159,8 @@ void MainWindow::on_saveGraphAction_triggered(){
     QTextStream input(&file);
     ui -> board -> saveFile(input);
     file.close();
+    QFileInfo fileInfo(file);
+    this -> setWindowTitle(fileInfo.fileName() + " - CSGraph 已保存!");
 }
 
 
@@ -208,6 +199,7 @@ void MainWindow::displayDefaultInfo(){
     ui -> newBlockButton -> setVisible(0);
     ui -> newBlockNameTag -> setVisible(0);
     ui -> newBlockLineedit -> setVisible(0);
+    ui -> popBlockButton -> setVisible(0);
 }
 
 
@@ -229,6 +221,7 @@ void MainWindow::displayElementInfo(Element *eptr){
     ui -> newBlockButton -> setVisible(0);
     ui -> newBlockNameTag -> setVisible(0);
     ui -> newBlockLineedit -> setVisible(0);
+    ui -> popBlockButton -> setVisible(0);
     NodeElement* nptr = (NodeElement*) eptr;
     StackElement* sptr = (StackElement*) eptr;
     QueueElement* qptr = (QueueElement*) eptr;
@@ -309,6 +302,13 @@ void MainWindow::displayElementInfo(Element *eptr){
     ui -> fontColorDisplayScreen -> setStyleSheet("background-color: rgb(" + QString::number(fontcolor.red()) + ","
                                                   + QString::number(fontcolor.green()) + ","
                                                   + QString::number(fontcolor.blue()) + ");");
+}
+
+
+void MainWindow::displayUnsave(){
+    QFile file(filePath);
+    QFileInfo fileInfo(file);
+    this -> setWindowTitle(fileInfo.fileName() + "* - CSGraph");
 }
 
 
@@ -659,24 +659,34 @@ void MainWindow::on_generateButton_pressed()
     QString text = ui -> quickInputTextEdit -> toPlainText();
     QTextStream input(&text);
     QVector <NodeElement*> nodes;
-    int n, m;
-    input >> n >> m;
+    int n, m, index;
+    input >> n >> m >> index;
     DSU dsu(n);
     for(int i = 1;i <= n;i++){
-        NodeElement* curNode = (NodeElement*)ui -> board -> initNode(QPoint(50 + i * 100, 50));
+        NodeElement* curNode = (NodeElement*)ui -> board -> initNode(QPoint(50, 50));
         nodes.push_back(curNode);
     }
     for(int i = 1;i <= m;i++){
         int u, v;
         input >> u >> v;
         dsu.unionset(u, v);
-        ui -> board -> initArrow((NodeElement*)nodes[u - 1], (NodeElement*)nodes[v - 1]);
+        ui -> board -> initArrow((NodeElement*)nodes[u - index], (NodeElement*)nodes[v - index]);
     }
     ui -> board -> updateLogic();
-    for(int i = 0;i < nodes.size();i++){
+    for(int i = index;i < nodes.size();i++){
         if(dsu.findFather(i) == i){
             ui -> board -> treeLayout(nodes[i]);
         }
     }
+    displayUnsave();
 }
 
+
+void MainWindow::setDrawingButtonEnable(bool state){
+    ui -> arrowSetButton -> setEnabled(state);
+    ui -> graphSetButton -> setEnabled(state);
+    ui -> cursorSetButton -> setEnabled(state);
+    ui -> queueSetButton -> setEnabled(state);
+    ui -> stackSetButton -> setEnabled(state);
+    ui -> generateButton -> setEnabled(state);
+}

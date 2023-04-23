@@ -27,6 +27,9 @@ signals:
     void fileUpdated();
 
 
+    void modified();
+
+
     void showDefaultInfoSignal();
 
 
