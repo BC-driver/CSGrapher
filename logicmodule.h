@@ -11,9 +11,9 @@
 #define LOGICMODULE_H
 
 #include <QObject>
-#include "element.h"
 #include <QMap>
 #include <QColor>
+#include "element.h"
 
 class LogicModule : public QObject
 {

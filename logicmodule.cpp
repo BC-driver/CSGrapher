@@ -223,9 +223,6 @@ void LogicModule::treeLayout(int s){
         }
     }
     QVector <QPair<int, int> > tree[maxlevel - minlevel + 2];
-//    for(int i = 0;i < nodes.size();i++){
-//        qDebug() << level[i] << " " << nodes[i] -> getContext();
-//    }
     for(int i = 0;i < nodes.size();i++){
         if(level[i] != inf){
             tree[level[i] - minlevel].push_back(qMakePair(i, pre[i]));

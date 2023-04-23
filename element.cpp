@@ -225,6 +225,20 @@ NodeElement::NodeElement(int x, int y, int r) :
 NodeElement::~NodeElement(){}
 
 
+NodeElement& NodeElement::operator=(const NodeElement &b){
+    if(this == &b) return *this;
+    radius = b.radius;
+    xPos = b.xPos;
+    yPos = b.yPos;
+    edgeColor = b.edgeColor;
+    fontColor = b.fontColor;
+    fontSize = b.fontSize;
+    lineWidth = b.lineWidth;
+    context = b.context;
+    return *this;
+}
+
+
 int NodeElement::getRadius(){
     return this -> radius;
 }
@@ -514,7 +528,7 @@ void QueueElement::paint(QPainter *painter){
     painter -> setPen(getFontColor());
     painter -> setFont(font);
     painter -> drawText(this -> xPos + this -> blockWidth * (-0.5), this -> yPos + this -> blockHeight * 0.5,
-                        this -> blockWidth * this -> size, this -> blockHeight,
+                        this -> blockWidth * (this -> size + 1), this -> blockHeight,
                         Qt::AlignHCenter | Qt::AlignVCenter, getContext());
 
 

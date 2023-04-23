@@ -40,7 +40,6 @@ void PaintWidget::paintEvent(QPaintEvent *event){
 void PaintWidget::mousePressEvent(QMouseEvent *event){
     if(event -> button() == Qt::LeftButton){
         QPoint mousePos = event -> pos();
-        QString temp[1] = {"1"};
         Element* hoveringElement = findHoverOn(mousePos);
         bool noCollide = hoveringElement == Q_NULLPTR;
         switch(currentDrawingElement){
@@ -49,11 +48,11 @@ void PaintWidget::mousePressEvent(QMouseEvent *event){
             break;
 
             case STACK:
-            if(noCollide) initStack(mousePos, 1, temp);
+            if(noCollide) initStack(mousePos, 0, Q_NULLPTR);
             break;
 
             case QUEUE:
-            if(noCollide) initQueue(mousePos, 1, temp);
+            if(noCollide) initQueue(mousePos, 0, Q_NULLPTR);
             break;
 
             case ARROW:
@@ -205,27 +204,6 @@ Element* PaintWidget::initStack(QPoint pt, int size, QString *list){
 Element* PaintWidget::initArrow(NodeElement *from, NodeElement *to){
     elementList.push_back(new ArrowElement(from, to));
     return elementList.last();
-}
-
-
-void PaintWidget::initGraph(){
-    elementList.clear();
-    QFile file(filePath);
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    QTextStream in(&file);
-    QString currentElementType;
-    in >> currentElementType;
-    while(currentElementType != "OK"){
-        if(currentElementType == "NODE"){
-            //todo;
-        }
-        else if(currentElementType == "STACK"){
-            //todo;
-        }
-        else if(currentElementType == "QUEUE"){
-            //todo;
-        }
-    }
 }
 
 

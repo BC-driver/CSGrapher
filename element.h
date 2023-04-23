@@ -198,6 +198,9 @@ public:
     ~NodeElement();
 
 
+    NodeElement& operator=(const NodeElement& b);
+
+
     int getRadius();
 
 

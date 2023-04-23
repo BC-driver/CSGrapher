@@ -51,9 +51,6 @@ public:
     void setFilePath(QString s);
 
 
-    void initGraph();
-
-
     Element* initNode(QPoint pt);
 
 

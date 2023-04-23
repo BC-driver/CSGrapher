@@ -254,6 +254,7 @@ void MainWindow::displayElementInfo(Element *eptr){
         ui -> newBlockButton -> setVisible(1);
         ui -> newBlockNameTag -> setVisible(1);
         ui -> newBlockLineedit -> setVisible(1);
+        ui -> popBlockButton -> setVisible(1);
         break;
 
         case QUEUE:
@@ -270,6 +271,7 @@ void MainWindow::displayElementInfo(Element *eptr){
         ui -> newBlockButton -> setVisible(1);
         ui -> newBlockNameTag -> setVisible(1);
         ui -> newBlockLineedit -> setVisible(1);
+        ui -> popBlockButton -> setVisible(1);
         break;
 
         case BLOCK:
